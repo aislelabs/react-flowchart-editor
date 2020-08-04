@@ -14,6 +14,7 @@ No additional package dependency.
 # Component API Documentation:
 [API Documentation](https://github.com/aislelabs/react-flowchart-editor/blob/master/src/AlWindowEditor.js#L1042)
 
-# 
-## build demo: (dist/demo/index.html)
+ 
+# Build demo:
 npm run-script build
+and then open the file dist/demo/index.html in your browser.

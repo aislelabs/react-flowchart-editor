@@ -16,5 +16,7 @@ No additional package dependency.
 
  
 # Build demo:
+```
 npm run-script build
+```
 and then open the file dist/demo/index.html in your browser.

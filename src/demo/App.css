@@ -1,0 +1,9 @@
+#maindom {
+	width:2000px;
+	height:2000px;
+	position: relative;
+	background-size: 25px 25px;
+	background-image:
+		linear-gradient(to right, #E0E0E0 1px, transparent 1px),
+		linear-gradient(to bottom, #E0E0E0 1px, transparent 1px);
+}

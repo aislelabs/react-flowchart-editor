@@ -1,0 +1,311 @@
+:root {
+  --alWE-font-size: 15px;
+  --alWE-pane-boxshadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --alWE-pane-transition-width: width 0.3s cubic-bezier(.25,.8,.25,1);
+  --alWE-pane-transition-all: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.height100 {
+  height: 100%;
+}
+
+.topCanvas {
+  color: #626262;
+  font-size: var(--alWE-font-size);
+  position: relative;
+  /*
+  background-size: 25px 25px;
+  background-image:
+    linear-gradient(to right, #E0E0E0 1px, transparent 1px),
+    linear-gradient(to bottom, #E0E0E0 1px, transparent 1px);
+	*/
+}
+
+.topCanvas svg {
+  position: absolute;
+  transform: translate(9999px,9999px);
+  overflow: visible!important;
+}
+
+.topCanvas path.bluePath {
+  fill: none;
+  stroke: #4ea9ff;
+  stroke-width: 3px;
+  transform:translate(-9999px,-9999px);
+  cursor:pointer;
+}
+
+
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+
+
+
+.alweNodeWrapper {
+  background: #fff;
+  position: absolute;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #cacaca;
+  user-select: none;
+  box-shadow: var(--alWE-pane-boxshadow);
+
+}
+
+.alweNodeWrapper.editorselected {
+  border: 3px solid #217CE8;
+}
+.alweNodeWrapper .nodecontent {
+  padding: 4px 4px;
+  cursor: grab;
+}
+
+.alweNodeWrapper .nodecontent .alweResizeBox {
+  cursor: se-resize;
+  width: 12px;
+  height: 12px;
+  border-bottom: 2px solid #A8A8A8;
+  border-right: 2px solid #A8A8A8;
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+}
+
+
+.nodecontent.cursormove {
+  cursor: move;
+}
+
+
+
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+
+
+
+
+.alweNodeWrapper .alweInputs {
+  width: 0px;
+}
+.alweNodeWrapper .alweInputs .alweInput {
+  background: #fff;
+  height: 15px;
+  width: 15px;
+  border : 1px solid #6495ED;
+  left: -15px;
+  cursor: crosshair;
+  position: relative;
+}
+
+.alweNodeWrapper .alweInputs .alweInput:hover, .alweNodeWrapper .alweInputs .alweInput.active {
+  background: #6495ED;
+}
+
+
+
+
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+
+
+.alweNodeWrapper .alweOutputs {
+  width: 0px;
+}
+.alweNodeWrapper .alweOutputs .alweOutput {
+  background: #fff;
+  position: relative;
+  height: 15px;
+  width: 15px;
+  border : 1px solid #D01F3C;
+  cursor: crosshair;
+}
+
+.alweNodeWrapper .alweOutputs .alweOutput:hover, .alweNodeWrapper .alweOutputs .alweOutput.active {
+  background: #D01F3C;
+}
+
+.alweNodeWrapper .alweOutputs svg.alweOutput {
+  transform: none;
+  width: 15px;
+  height: 15px;
+}
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+.componentArea {
+  box-shadow: var(--alWE-pane-boxshadow);
+  color: #626262;
+  height: calc(100vh - 72px);
+  z-index: 998;
+  position: absolute;
+  background: #fff;
+  width: 300px;
+}
+.componentArea.open {
+  width: 300px;
+  transition: var(--alWE-pane-transition-width);
+}
+.componentArea.closed {
+  width: 0px;
+  transition: var(--alWE-pane-transition-width);
+}
+.componentArea .componentContent {
+  height: calc(100% - 56px);
+  overflow: auto;
+}
+
+
+
+.componentArea .componentContent .alweComponentFilter {
+  padding: 28px 12px;
+}
+
+.componentArea .componentContent .alweComponentFilter svg {
+  /* for the search magnifying glass */
+  position: absolute;
+  top: 40px;
+  left: 24px;
+}
+
+.componentArea .componentContent .alweComponentFilter input {
+  display: block;
+  width: 100%;
+  height: 40px;
+  background-color: #FFF;
+  border: 1px solid #E8E8EF;
+  box-sizing: border-box;
+  box-shadow: var(--alWE-pane-boxshadow);
+  border-radius: 5px;
+  text-indent: 35px;
+  font-size: var(--alWE-font-size);
+}
+
+.componentArea .componentContent.closed {
+  display: none;
+}
+.componentArea .componentContent .componentContentItem {
+  width: 100%;
+  user-select: none;
+  padding: 28px 12px;
+  cursor: pointer;
+  text-align: center;
+  font-size: var(--alWE-font-size);
+}
+.componentArea .closeOpenButton {
+  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.12);
+  user-select: none;
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  padding: 18px;
+  left: 100%;
+  font-weight: bold;
+  text-align: center;
+  background-color: #FFF;
+  border-radius: 0px 5px 5px 0px;
+  border-bottom: 1px solid #E8E8EF;
+  border-right: 1px solid #E8E8EF;
+  border-top: 1px solid #E8E8EF;
+}
+
+.componentArea .componentContent .componentContentItem:hover {
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px 1px rgba(0,0,0,0.22);
+}
+.componentArea .closeOpenButton .indicator, .componentArea .closeOpenButton .indicator.open {
+  transform: rotate(0deg);
+  transition: var(--alWE-pane-transition-all);
+}
+.componentArea .closeOpenButton .indicator.closed {
+  transform: rotate(180deg);
+  transition: var(--alWE-pane-transition-all);
+}
+
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+
+
+.editorArea {
+  box-shadow: var(--alWE-pane-boxshadow);
+  color: #626262;
+  height: calc(100vh - 72px);
+  z-index: 999;
+  position: absolute;
+  background: #fff;
+  width: 350px;
+  right: 1px;
+}
+.editorArea.open {
+  width: 350px;
+  transition: var(--alWE-pane-transition-width);
+}
+.editorArea.closed {
+  width: 0px;
+  transition: var(--alWE-pane-transition-width);
+}
+
+.editorArea .editorContent {
+    max-height: calc(100% - 66px);
+    overflow: auto;
+}
+
+.editorArea .editorContent.closed {
+    display: none;
+}
+
+.editorArea .editorClose {
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  border-top: 1px solid #d0d0d0;
+  background-color: #fff;
+}
+.editorArea .editorClose.closed {
+  display: none;
+}
+
+.editorArea .editorClose .editorCloseButton, .editorArea .editorClose .editorDeleteButton {
+  font-size: var(--alWE-font-size);
+  background-color: #FFF;
+  z-index: 999;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 12px;
+  user-select: none;
+  text-align: center;
+  color: #253134;
+  border: 1px solid #c0c0c0;
+  width: 80%;
+  margin: 16px auto;
+  /*transition: all .3s cubic-bezier(.05,.03,.35,1);*/
+  transition: var(--alWE-pane-transition-all);
+}
+.editorArea .editorClose .editorDeleteButton {
+  color: rgb(249, 38, 114);
+  border: 1px solid rgb(249, 38, 114);
+}
+

@@ -1,4 +1,4 @@
-# Aislelabs Windowed Editor
+# React Flow Chart Editor
 ![Demo](https://media.giphy.com/media/cLHmgI0t1NRve5OsiL/giphy.gif)
 
 # commands:

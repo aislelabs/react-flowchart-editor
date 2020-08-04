@@ -1,4 +1,7 @@
 # React Flow Chart Editor
+A window editor that supports flow chart editing. The window editor supports window positioning,
+resizing and workspace panning. Simple component plugin architecture to allow easy customization.
+No additional package dependency. 
 ![GIFDEMO](https://media.giphy.com/media/Kg8rEU55PgbyfjtF23/giphy.gif)
 
 

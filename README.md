@@ -1,5 +1,5 @@
 # React Flow Chart Editor
-![Demo](https://media.giphy.com/media/cLHmgI0t1NRve5OsiL/giphy.gif)
+![GIFDEMO](https://media.giphy.com/media/Kg8rEU55PgbyfjtF23/giphy.gif)
 
 # commands:
 ## build demo: (dist/demo/index.html)

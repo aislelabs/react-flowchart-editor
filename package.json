@@ -8,9 +8,13 @@
     "build": "webpack --mode=development --config webpack.config.js",
     "prod": "NODE_ENV=production webpack -p --mode=production --config webpack.config.js"
   },
-  "keywords": ['flowchart', 'window'],
-  "author": "",
+  "keywords": ["flowchart", "window"],
+  "author": "Aislelabs Inc",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aislelabs/react-flowchart-editor.git"
+  },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
     "@babel/core": "^7.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@aislelabs/react-flowchart-editor",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "scripts": {
     "start": "webpack --mode=development -w --config webpack.config.js",

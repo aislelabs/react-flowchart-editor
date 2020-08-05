@@ -15,6 +15,7 @@ module.exports = {
                         '@babel/react'
                     ],
                     plugins: [
+			    "@babel/plugin-transform-modules-commonjs",
                         '@babel/plugin-proposal-class-properties'
                     ]
            }

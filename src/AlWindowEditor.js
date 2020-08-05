@@ -11,7 +11,7 @@ let uuidv4 = () => {
 };
 let defaultUuidFcn = uuidv4;
 
-class AlWindowEditor extends React.Component {
+export class AlWindowEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

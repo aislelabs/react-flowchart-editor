@@ -1096,5 +1096,5 @@ AlWindowEditor.propTypes = {
      If uuidGenFcn is  not supplied, a default implementation is used*/
 };
 
-//module.exports = AlWindowEditor;
-export default AlWindowEditor;
+module.exports = AlWindowEditor;
+//export default AlWindowEditor;

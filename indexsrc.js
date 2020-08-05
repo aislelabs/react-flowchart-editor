@@ -1,4 +1,4 @@
 import AlWindowEditor from './src/AlWindowEditor.js';
 
-export default AlWindowEditor;
-
+//export default AlWindowEditor;
+module.exports = AlWindowEditor;

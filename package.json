@@ -5,6 +5,9 @@
   "scripts": {
     "build": "webpack"
   },
+  "files": [
+    "index.js"
+  ],
   "keywords": [
     "flowchart",
     "window"

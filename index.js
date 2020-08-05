@@ -81,10 +81,22 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/AlWindowEditor.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./indexsrc.js");
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./indexsrc.js":
+/*!*********************!*\
+  !*** ./indexsrc.js ***!
+  \*********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _src_AlWindowEditor_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/AlWindowEditor.js */ \"./src/AlWindowEditor.js\");\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (_src_AlWindowEditor_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n//# sourceURL=webpack:///./indexsrc.js?");
+
+/***/ }),
 
 /***/ "./node_modules/css-loader/index.js!./src/css/AlWindowEditor.css":
 /*!**************************************************************!*\

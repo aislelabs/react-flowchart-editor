@@ -2,7 +2,6 @@
   "name": "@aislelabs/react-flowchart-editor",
   "version": "0.0.5",
   "description": "",
-  "main": "dist/alWindowEditor.js",
   "scripts": {
     "start": "webpack --mode=development -w --config webpack.config.js",
     "build": "webpack --mode=development --config webpack.config.js",
@@ -33,6 +32,7 @@
     "webpack-dev-server": "^3.1.8"
   },
   "dependencies": {
+    "prop-types": "^15.7.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2"
   }

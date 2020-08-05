@@ -7,6 +7,12 @@ No additional package dependency.
 ![GIFDEMO](https://media.giphy.com/media/Kg8rEU55PgbyfjtF23/giphy.gif)
 
 
+# Usage: 
+```
+import FlowchartEditor from '@aislelabs/react-flowchart-editor';
+
+<FlowchartEditor .../> (see Component API Documentation below)
+```
 
 # Sample Application:
 [Sample Application](https://github.com/aislelabs/react-flowchart-editor/blob/master/src/demo/App.js)

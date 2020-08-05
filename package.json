@@ -1,6 +1,6 @@
 {
   "name": "@aislelabs/react-flowchart-editor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "src/AlWindowEditor.js",
   "scripts": {
@@ -8,7 +8,10 @@
     "build": "webpack --mode=development --config webpack.config.js",
     "prod": "NODE_ENV=production webpack -p --mode=production --config webpack.config.js"
   },
-  "keywords": ["flowchart", "window"],
+  "keywords": [
+    "flowchart",
+    "window"
+  ],
   "author": "Aislelabs Inc",
   "license": "MIT",
   "repository": {

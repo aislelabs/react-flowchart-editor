@@ -8,7 +8,7 @@
     "build": "webpack --mode=development --config webpack.config.js",
     "prod": "NODE_ENV=production webpack -p --mode=production --config webpack.config.js"
   },
-  "keywords": [],
+  "keywords": ['flowchart', 'window'],
   "author": "",
   "license": "MIT",
   "devDependencies": {

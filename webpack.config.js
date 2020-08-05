@@ -3,7 +3,6 @@ const webpack = require("webpack");
 
 module.exports = {
   entry: {"index": "./indexsrc.js"},
-  //mode: "development",
   module: {
     rules: [
       {
@@ -17,7 +16,6 @@ module.exports = {
                     ],
                     plugins: [
                         '@babel/plugin-proposal-class-properties'
-			//,'@babel/plugin-transform-modules-commonjs'
                     ]
            }
       },
@@ -27,10 +25,11 @@ module.exports = {
       }
     ]
   },
-  resolve: { extensions: ["*", ".js", ".jsx", ".css"] },
+  resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
     path: path.resolve(__dirname, "./"),
-    filename: "[name].js"
+    filename: "[name].js",
+    libraryTarget: 'commonjs2'
   }
 }
 

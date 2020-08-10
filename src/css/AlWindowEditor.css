@@ -210,6 +210,7 @@
   cursor: pointer;
   text-align: center;
   font-size: var(--alWE-font-size);
+  box-sizing: border-box;
 }
 .componentArea .closeOpenButton {
   box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.12);

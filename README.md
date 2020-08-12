@@ -7,6 +7,9 @@ No additional package dependency.
 ![GIFDEMO](https://media.giphy.com/media/Kg8rEU55PgbyfjtF23/giphy.gif)
 
 
+# Live Demo:
+[Live Demo](http://data.aislelabs.com/demo/index.html)
+
 # Usage: 
 ```
 import FlowchartEditor from '@aislelabs/react-flowchart-editor';

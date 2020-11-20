@@ -166,12 +166,19 @@ class App extends Component{
             console.log('updateCbkFcn ; nodeDescriptors', JSON.stringify(nodeDescriptors));
             console.log('updateCbkFcn ; nodeLinks', JSON.stringify(nodeLinks));
         };
+	let nodeidBorderColor = {
+		// https://www.color-hex.com/
+		2: '#4c616a',
+		4: '#e3b3e3',
+		5: '#d25f2e',
+	};
         return <AlWindowEditor viewOnly={false}
                                pointerDiscretization={25}
-                                initialNodeDescriptors={nodeDescriptors}
-                                initialNodeLinks={nodeLinks}
-                                componentRegistry={componentRegistry}
-                                updateCbkFcn={updateCbkFcn}/>
+                               initialNodeDescriptors={nodeDescriptors}
+                               initialNodeLinks={nodeLinks}
+                               componentRegistry={componentRegistry}
+                               updateCbkFcn={updateCbkFcn}
+		               nodeidBorderColorMap={nodeidBorderColor}/>
 	}
 }
 

@@ -2,8 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-//  entry: {"index": "./indexsrc.js"},
-	
+  entry: {"index": "./indexsrc.js"},
 //  entry: {"demoindex": './src/demo/index.js'}, // build demo page index
   module: {
     rules: [
@@ -17,7 +16,7 @@ module.exports = {
                         '@babel/react'
                     ],
                     plugins: [
-			//"@babel/plugin-transform-modules-commonjs", // remove for demoindex.js
+			"@babel/plugin-transform-modules-commonjs", // remove for demoindex.js
                         '@babel/plugin-proposal-class-properties'
                     ]
            }
@@ -32,7 +31,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./"),
     filename: "[name].js",
-    //libraryTarget: 'commonjs2' // remove for demoindex.js
+    libraryTarget: 'commonjs2' // remove for demoindex.js
   }
 }
 

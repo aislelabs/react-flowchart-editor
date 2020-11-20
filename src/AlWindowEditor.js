@@ -579,6 +579,7 @@ class AlWindowEditor extends React.Component {
     ////////////////////////////////////////////////////////////////////////////////
     getNodeWrapperJsx = (nodeDescriptorData) => {
         let nodeId = nodeDescriptorData.nodeId;
+        //let nodeUuid = nodeDescriptorData.nodeUuid;
         let nodeType = nodeDescriptorData.nodeType;
         let perNodeData = nodeDescriptorData.data;
         let numInputs = nodeDescriptorData.numInputs;
@@ -596,8 +597,13 @@ class AlWindowEditor extends React.Component {
             this.state.outputSelectedNodeId == nodeId;
         let outputSelectIdx = this.state.outputSelectedIdx;
         let editorSelectedCssClassName = '';
+        let adhocNodeidBorderColour = null;
         if (this.state.editorSelectedNodeId == nodeId) {
+            // this node is dblclk selected
             editorSelectedCssClassName = 'editorselected';
+        } else if (this.props.nodeidBorderColorMap != null && nodeId in this.props.nodeidBorderColorMap) {
+	    // this nodeid has a specific border color requirement from props
+            adhocNodeidBorderColour = this.props.nodeidBorderColorMap[nodeId];
         }
 
         let linksData = this.state.nodeLinks;
@@ -684,14 +690,21 @@ class AlWindowEditor extends React.Component {
             }
         }
         ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
 
         let cursorMoveCss = contentIsSelected === true ? 'cursormove' : '';
+        let styleObj = { left: displayOffsetX + 'px', top: displayOffsetY + 'px' };
+        if (adhocNodeidBorderColour != null) {
+            styleObj = { ...styleObj, border: '4px solid ' + adhocNodeidBorderColour };
+        }
         return (
             <div
                 className={`alweNodeWrapper ${editorSelectedCssClassName}`}
                 key={'alweNodeWrapper_' + nodeId}
                 data-node-id={nodeId + ''}
-                style={{ left: displayOffsetX + 'px', top: displayOffsetY + 'px' }}>
+                style={styleObj}>
                 <div className={'alweInputs'}>{inputElements}</div>
                 <div
                     className={`nodecontent ${cursorMoveCss}`}
@@ -1083,7 +1096,15 @@ AlWindowEditor.propTypes = {
                         Props : "data" : up to date data for the component
                                 "updater": function of 1 parameter (the data) to update data
     }
-    * */
+    */
+    /*
+    nodeidBorderColorMap: (an optional) map from nodeid (not node UUID) to color that CSS understands. This will be rendered
+                             as the border color of the indicated node ID. This is useful for indicating problems
+                             with a set of node ID's
+	list of colours: https://www.color-hex.com/
+     */
+    nodeidBorderColorMap: PropTypes.object,
+    
     componentRegistry: PropTypes.array,
 
     // updateCbkFcn : callback function for when the data of the nodes on the main window area changes
@@ -1091,10 +1112,9 @@ AlWindowEditor.propTypes = {
     updateCbkFcn: PropTypes.func,
 
     uuidGenFcn:
-    PropTypes.func /* optional, a no argument function that is capable of generating application unique
+        PropTypes.func /* optional, a no argument function that is capable of generating application unique
     uuid preferbly in v4. The function can return either the UUID string, or a promise.
      If uuidGenFcn is  not supplied, a default implementation is used*/
 };
 
-//module.exports = AlWindowEditor;
 export default AlWindowEditor;

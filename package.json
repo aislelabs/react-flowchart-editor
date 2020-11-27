@@ -3,7 +3,8 @@
   "version": "0.0.19",
   "description": "",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "webpack --watch"
   },
   "files": [
     "index.js"

@@ -13,6 +13,7 @@
   color: #626262;
   font-size: var(--alWE-font-size);
   position: relative;
+  border: 2px #A0A0A0 dotted;
   /*
   background-size: 25px 25px;
   background-image:

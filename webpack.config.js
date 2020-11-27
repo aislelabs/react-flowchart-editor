@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   entry: {"index": "./indexsrc.js"},
-//  entry: {"demoindex": './src/demo/index.js'}, // build demo page index
+  //entry: {"./dist/demoindex": './src/demo/index.js'}, // build demo page index
   module: {
     rules: [
       {

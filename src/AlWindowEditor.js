@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './css/AlWindowEditor.css';
 
 let uuidv4 = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         let r = (Math.random() * 16) | 0,
             v = c == 'x' ? r : (r & 0x3) | 0x8;
         return v.toString(16);
@@ -14,6 +14,8 @@ let defaultUuidFcn = uuidv4;
 class AlWindowEditor extends React.Component {
     constructor(props) {
         super(props);
+        this.canvasRef = React.createRef();
+        this.scrollFix = false;
         this.state = {
             contentSelectedNodeId: -1, // contentSelectedNodeId : node id selected for moving
             outputSelectedNodeId: -1,
@@ -24,6 +26,7 @@ class AlWindowEditor extends React.Component {
 
             canvasOffsetX: 0,
             canvasOffsetY: 0,
+            canvasScale: 1.0,
 
             currentMouseX: -1,
             currentMouseY: -1,
@@ -59,11 +62,29 @@ class AlWindowEditor extends React.Component {
             // states for right editor component area:
             editorAreaOpen: false,
             // the search box at the top of the component area:
-            componentSearchText: ''
+            componentSearchText: '',
         };
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!this.scrollFix) {
+            if (this.canvasRef && this.canvasRef.current) {
+                this.scrollFix = true;
+                console.log('***************************Scroll fix , wtf passive: false!');
+                this.canvasRef.current.addEventListener(
+                    'wheel',
+                    (e) => {
+                        e.preventDefault();
+                    },
+                    { passive: false }
+                );
+            } else {
+                console.log('2 no scroll fix');
+            }
+        } else {
+            console.log('1 no scroll fix');
+        }
+
         if (
             this.props.initialNodeDescriptors &&
             this.props.initialNodeDescriptors.length > 0 &&
@@ -185,7 +206,7 @@ class AlWindowEditor extends React.Component {
                     canvasMoveSelected: -1,
                     resizeSelectedNodeId: parseInt(closestNodeWrapper.dataset.nodeId),
                     mouseDownX: e.clientX - canvas.getBoundingClientRect().left,
-                    mouseDownY: e.clientY - canvas.getBoundingClientRect().top
+                    mouseDownY: e.clientY - canvas.getBoundingClientRect().top,
                 });
             }
         } else if (
@@ -207,7 +228,7 @@ class AlWindowEditor extends React.Component {
                     canvasMoveSelected: -1,
                     contentSelectedNodeId: parseInt(mouseDownContentNodeId),
                     mouseDownOffsetX: offsetX,
-                    mouseDownOffsetY: offsetY
+                    mouseDownOffsetY: offsetY,
                 });
             }
         } else if (dom.classList.contains('alweOutput')) {
@@ -224,10 +245,12 @@ class AlWindowEditor extends React.Component {
                     contentSelectedNodeId: -1,
                     resizeSelectedNodeId: -1,
                     canvasMoveSelected: -1,
-                    mouseDownX: e.clientX - canvas.getBoundingClientRect().left,
-                    mouseDownY: e.clientY - canvas.getBoundingClientRect().top,
+                    mouseDownX:
+                        (e.clientX - canvas.getBoundingClientRect().left) / this.state.canvasScale,
+                    mouseDownY:
+                        (e.clientY - canvas.getBoundingClientRect().top) / this.state.canvasScale,
                     outputSelectedNodeId: parseInt(closestNodeWrapper.dataset.nodeId),
-                    outputSelectedIdx: parseInt(outputIdx)
+                    outputSelectedIdx: parseInt(outputIdx),
                 });
             }
         } else if (dom.classList.contains('topCanvas')) {
@@ -236,9 +259,41 @@ class AlWindowEditor extends React.Component {
                 resizeSelectedNodeId: -1,
                 outputSelectedNodeId: -1,
                 canvasMoveSelected: 1,
-                mouseDownX: e.clientX - dom.getBoundingClientRect().left,
-                mouseDownY: e.clientY - dom.getBoundingClientRect().top
+                mouseDownX: (e.clientX - dom.getBoundingClientRect().left) / this.state.canvasScale,
+                mouseDownY: (e.clientY - dom.getBoundingClientRect().top) / this.state.canvasScale,
             });
+        }
+    };
+
+    canvaswheel = (e) => {
+        let dom = e.target;
+        let canvas = dom.closest('.topCanvas');
+        if (canvas == dom) {
+            // scrolling on the canvas working area.
+            let multiple = 0;
+            if (e.deltaY < 0) {
+                multiple = 1;
+            } else if (e.deltaY > 0) {
+                multiple = -1;
+            }
+            let oldScaling = this.state.canvasScale;
+            let scaling = oldScaling + 0.1 * multiple;
+            if (scaling >= 1.6) {
+                scaling = 1.6;
+            }
+            if (scaling < 0.3) {
+                scaling = 0.3;
+            }
+            if (oldScaling != scaling) {
+                let scalechange = scaling - oldScaling;
+                let x = (this.state.canvasOffsetX * scaling) / oldScaling;
+                let y = (this.state.canvasOffsetY * scaling) / oldScaling;
+                this.setState({
+                    canvasOffsetX: x,
+                    canvasOffsetY: y,
+                    canvasScale: scaling,
+                });
+            }
         }
     };
 
@@ -248,8 +303,10 @@ class AlWindowEditor extends React.Component {
         if (this.state.contentSelectedNodeId != null && this.state.contentSelectedNodeId > -1) {
             let newWrapperX =
                 e.clientX - this.state.mouseDownOffsetX - canvas.getBoundingClientRect().left;
+            newWrapperX /= this.state.canvasScale;
             let newWrapperY =
                 e.clientY - this.state.mouseDownOffsetY - canvas.getBoundingClientRect().top;
+            newWrapperY /= this.state.canvasScale;
             newWrapperX =
                 parseInt(newWrapperX / this.getPointerDiscretization()) *
                 this.getPointerDiscretization();
@@ -267,7 +324,7 @@ class AlWindowEditor extends React.Component {
                     nodeDescriptor.display.offsetY = newWrapperY;
                     return {
                         ...state,
-                        nodeDescriptors: nodeDescriptors
+                        nodeDescriptors: nodeDescriptors,
                     };
                 }
             });
@@ -276,15 +333,19 @@ class AlWindowEditor extends React.Component {
             this.state.outputSelectedNodeId > -1
         ) {
             this.setState({
-                currentMouseX: e.clientX - canvas.getBoundingClientRect().left,
-                currentMouseY: e.clientY - canvas.getBoundingClientRect().top
+                currentMouseX:
+                    (e.clientX - canvas.getBoundingClientRect().left) / this.state.canvasScale,
+                currentMouseY:
+                    (e.clientY - canvas.getBoundingClientRect().top) / this.state.canvasScale,
             });
         } else if (
             this.state.resizeSelectedNodeId != null &&
             this.state.resizeSelectedNodeId > -1
         ) {
             let currentX = e.clientX - canvas.getBoundingClientRect().left;
+            currentX /= this.state.canvasScale;
             let currentY = e.clientY - canvas.getBoundingClientRect().top;
+            currentY /= this.state.canvasScale;
             let nodeId = this.state.resizeSelectedNodeId;
 
             let descriptors = this.state.nodeDescriptors;
@@ -296,12 +357,12 @@ class AlWindowEditor extends React.Component {
                     let newWidth =
                         parseInt(
                             (currentX - descriptor.display.offsetX) /
-                            this.getPointerDiscretization()
+                                this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     let newHeight =
                         parseInt(
                             (currentY - descriptor.display.offsetY) /
-                            this.getPointerDiscretization()
+                                this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     descriptor.display.width = Math.max(32, newWidth);
                     descriptor.display.height = Math.max(32, newHeight);
@@ -313,12 +374,14 @@ class AlWindowEditor extends React.Component {
             this.setState({ nodeDescriptors: newDescriptorList });
         } else if (this.state.canvasMoveSelected == 1) {
             let currentX = e.clientX - canvas.getBoundingClientRect().left;
+            currentX /= this.state.canvasScale;
             let currentY = e.clientY - canvas.getBoundingClientRect().top;
+            currentY /= this.state.canvasScale;
             let newOffX = this.state.canvasOffsetX + currentX - this.state.mouseDownX;
             let newOffY = this.state.canvasOffsetY + currentY - this.state.mouseDownY;
             this.setState({
                 canvasOffsetX: newOffX,
-                canvasOffsetY: newOffY
+                canvasOffsetY: newOffY,
             });
         }
     };
@@ -357,7 +420,7 @@ class AlWindowEditor extends React.Component {
             currentMouseX: -1,
             currentMouseY: -1,
             mouseDownX: -1,
-            mouseDownY: -1
+            mouseDownY: -1,
         });
     };
 
@@ -372,7 +435,7 @@ class AlWindowEditor extends React.Component {
             if (doubleClickedNodeId != null && doubleClickedNodeId > -1) {
                 this.setState({
                     editorAreaOpen: true,
-                    editorSelectedNodeId: doubleClickedNodeId
+                    editorSelectedNodeId: doubleClickedNodeId,
                 });
             }
         }
@@ -385,8 +448,12 @@ class AlWindowEditor extends React.Component {
         let dom = e.target;
         if (dom.classList.contains('topCanvas')) {
             let ptrX = e.clientX - dom.getBoundingClientRect().left;
+            ptrX /= this.state.canvasScale;
             let ptrY = e.clientY - dom.getBoundingClientRect().top;
+            ptrY /= this.state.canvasScale;
+
             e.preventDefault();
+
             let componentType = e.dataTransfer.getData('componentType');
             if (componentType != null && componentType.length > 0) {
                 let componentDescriptor = this.getComponentDescriptor(componentType);
@@ -422,11 +489,11 @@ class AlWindowEditor extends React.Component {
                                 offsetX: ptrX,
                                 offsetY: ptrY,
                                 width: componentDescriptor.initialWidthPx,
-                                height: componentDescriptor.initialHeightPx
-                            }
+                                height: componentDescriptor.initialHeightPx,
+                            },
                         };
                         this.setState({
-                            nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor]
+                            nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
                         });
                     };
 
@@ -516,7 +583,7 @@ class AlWindowEditor extends React.Component {
             this.setState((state) => {
                 return {
                     ...state,
-                    nodeLinks: links
+                    nodeLinks: links,
                 };
             });
         }
@@ -546,7 +613,7 @@ class AlWindowEditor extends React.Component {
             nodeDescriptors: nodeDescriptors,
             nodeLinks: nodeLinks,
             editorSelectedNodeId: -1,
-            editorAreaOpen: false
+            editorAreaOpen: false,
         });
     };
 
@@ -562,7 +629,7 @@ class AlWindowEditor extends React.Component {
             if (descriptor.nodeId == nodeId) {
                 descriptor.data = { ...newNodeData };
                 this.setState({
-                    nodeDescriptors: nodeDescriptors
+                    nodeDescriptors: nodeDescriptors,
                 });
                 return;
             }
@@ -601,8 +668,11 @@ class AlWindowEditor extends React.Component {
         if (this.state.editorSelectedNodeId == nodeId) {
             // this node is dblclk selected
             editorSelectedCssClassName = 'editorselected';
-        } else if (this.props.nodeidBorderColorMap != null && nodeId in this.props.nodeidBorderColorMap) {
-	    // this nodeid has a specific border color requirement from props
+        } else if (
+            this.props.nodeidBorderColorMap != null &&
+            nodeId in this.props.nodeidBorderColorMap
+        ) {
+            // this nodeid has a specific border color requirement from props
             adhocNodeidBorderColour = this.props.nodeidBorderColorMap[nodeId];
         }
 
@@ -712,7 +782,7 @@ class AlWindowEditor extends React.Component {
                         width: displayContentWrapperWidth + 'px',
                         height: displayContentWrapperHeight + 'px',
                         maxWidth: displayContentWrapperWidth + 'px',
-                        maxHeight: displayContentWrapperHeight + 'px'
+                        maxHeight: displayContentWrapperHeight + 'px',
                     }}>
                     {contentJsx}
                     <div className={'alweResizeBox'} />
@@ -872,12 +942,7 @@ class AlWindowEditor extends React.Component {
         // 3) for all existing links, draw the curves
         let outputInputLinkageSvgs = this.getOutputInputLinkSVGs();
 
-        let canvasTransform = null;
-        if (this.state.canvasOffsetX != 0 || this.state.canvasOffsetY != 0) {
-            canvasTransform = `translate(${this.state.canvasOffsetX}px, ${
-                this.state.canvasOffsetY
-            }px)`;
-        }
+        let canvasTransform = `translate(${this.state.canvasOffsetX}px, ${this.state.canvasOffsetY}px) scale(${this.state.canvasScale}) `;
 
         // 4) render the component selector if it is expanded
         let componentAreaOpenCssClassname =
@@ -924,9 +989,7 @@ class AlWindowEditor extends React.Component {
                         !ComponentSelectReactClass
                     ) {
                         componentInnerJsx = (
-                            <div>{`${registry.componentGroup} - ${
-                                registry.componentTypeName
-                            }`}</div>
+                            <div>{`${registry.componentGroup} - ${registry.componentTypeName}`}</div>
                         );
                     } else {
                         componentInnerJsx = <ComponentSelectReactClass />;
@@ -1033,11 +1096,13 @@ class AlWindowEditor extends React.Component {
                 {/************************************************************** */}
 
                 <div
+                    ref={this.canvasRef}
                     className={'topCanvas'}
-                    style={{ width: '6900px', height: '6900px', transform: canvasTransform }}
+                    style={{ width: '100%', height: '100%', transform: canvasTransform }}
                     onMouseDown={this.canvasmousedown}
                     onMouseUp={this.canvasmouseup}
                     onMouseMove={this.canvasmousemove}
+                    onWheel={this.canvaswheel}
                     onDoubleClick={this.canvasDoubleClick}
                     onDrop={this.canvasdrop}
                     onDragOver={(e) => {
@@ -1104,17 +1169,17 @@ AlWindowEditor.propTypes = {
 	list of colours: https://www.color-hex.com/
      */
     nodeidBorderColorMap: PropTypes.object,
-    
+
     componentRegistry: PropTypes.array,
 
     // updateCbkFcn : callback function for when the data of the nodes on the main window area changes
     //                receives 2 parameters : nodeDescriptors, and nodeLinks.
     updateCbkFcn: PropTypes.func,
 
-    uuidGenFcn:
-        PropTypes.func /* optional, a no argument function that is capable of generating application unique
+    /* optional, a no argument function that is capable of generating application unique
     uuid preferbly in v4. The function can return either the UUID string, or a promise.
      If uuidGenFcn is  not supplied, a default implementation is used*/
+    uuidGenFcn: PropTypes.func,
 };
 
 export default AlWindowEditor;

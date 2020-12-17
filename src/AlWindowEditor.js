@@ -70,7 +70,6 @@ class AlWindowEditor extends React.Component {
         if (!this.scrollFix) {
             if (this.canvasRef && this.canvasRef.current) {
                 this.scrollFix = true;
-                console.log('***************************Scroll fix , wtf passive: false!');
                 this.canvasRef.current.addEventListener(
                     'wheel',
                     (e) => {
@@ -78,11 +77,7 @@ class AlWindowEditor extends React.Component {
                     },
                     { passive: false }
                 );
-            } else {
-                console.log('2 no scroll fix');
             }
-        } else {
-            console.log('1 no scroll fix');
         }
 
         if (

@@ -183,9 +183,9 @@
 
 .componentArea .componentContent .alweComponentFilter svg {
   /* for the search magnifying glass */
-  position: absolute;
-  top: 40px;
-  left: 24px;
+  position: relative;
+  top: 32px;
+  left: 12px;
 }
 
 .componentArea .componentContent .alweComponentFilter input {

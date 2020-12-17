@@ -168,12 +168,12 @@ class App extends Component{
         };
 	let nodeidBorderColor = {
 		// https://www.color-hex.com/
-		2: '#4c616a',
-		4: '#e3b3e3',
-		5: '#d25f2e',
+		// 2: '#4c616a',
+		// 4: '#e3b3e3',
+		//  5: '#d25f2e',
 	};
         return <AlWindowEditor viewOnly={false}
-                               pointerDiscretization={25}
+                               pointerDiscretization={1}
                                initialNodeDescriptors={nodeDescriptors}
                                initialNodeLinks={nodeLinks}
                                componentRegistry={componentRegistry}

@@ -214,13 +214,16 @@
   font-size: var(--alWE-font-size);
   box-sizing: border-box;
 }
+
+/* component open, close button ">>" */
 .componentArea .closeOpenButton {
   box-shadow: -1px 1px 0px 0px rgba(0,0,0,0.12);
   user-select: none;
   cursor: pointer;
-  position: absolute;
+  position: relative;
   padding: 16px;
-  left: -51px;
+  width: 32px;
+  left: -63px;
   font-weight: bold;
   text-align: center;
   background-color: #FFF;

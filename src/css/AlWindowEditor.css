@@ -156,9 +156,10 @@
 .componentArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100vh - 72px);
+  height: calc(100vh - 60px);
   z-index: 998;
   position: absolute;
+  right: 0px;
   background: #fff;
   width: 300px;
 }
@@ -214,19 +215,18 @@
   box-sizing: border-box;
 }
 .componentArea .closeOpenButton {
-  box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.12);
+  box-shadow: -1px 1px 0px 0px rgba(0,0,0,0.12);
   user-select: none;
   cursor: pointer;
   position: absolute;
-  top: 4px;
-  padding: 18px;
-  left: 100%;
+  padding: 16px;
+  left: -51px;
   font-weight: bold;
   text-align: center;
   background-color: #FFF;
-  border-radius: 0px 5px 5px 0px;
+  border-radius: 5px 0 0 5px;
   border-bottom: 1px solid #E8E8EF;
-  border-right: 1px solid #E8E8EF;
+  border-left: 1px solid #E8E8EF;
   border-top: 1px solid #E8E8EF;
 }
 
@@ -254,16 +254,15 @@
 .editorArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100vh - 72px);
+  height: calc(100vh - 60px);
   z-index: 999;
   position: absolute;
   background: #fff;
-  width: 350px;
+  width: 360px;
   right: 1px;
 }
 .editorArea.open {
   width: 350px;
-  height: 100%;
   transition: var(--alWE-pane-transition-width);
 }
 .editorArea.closed {

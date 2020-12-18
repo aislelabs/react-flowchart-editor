@@ -651,6 +651,8 @@ class AlWindowEditor extends React.Component {
 
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     getNodeWrapperJsx = (nodeDescriptorData) => {
         let nodeId = nodeDescriptorData.nodeId;
         //let nodeUuid = nodeDescriptorData.nodeUuid;
@@ -676,8 +678,7 @@ class AlWindowEditor extends React.Component {
             // this node is dblclk selected
             editorSelectedCssClassName = 'editorselected';
         } else if (
-            this.props.nodeidBorderColorMap != null &&
-            nodeId in this.props.nodeidBorderColorMap
+            this.props.nodeidBorderColorMap != null && nodeId in this.props.nodeidBorderColorMap
         ) {
             // this nodeid has a specific border color requirement from props
             adhocNodeidBorderColour = this.props.nodeidBorderColorMap[nodeId];
@@ -726,11 +727,6 @@ class AlWindowEditor extends React.Component {
             inputElements.push(
                 downArrowSvg
             );
-                /*<div
-                    className={`alweInput ${activeStr}`}
-                    key={'alweInput_' + i}
-                    data-idx={'input_' + i}
-                />*/
         }
         let outputElements = [];
         for (i = 0; i < numOutputs; ++i) {
@@ -742,6 +738,9 @@ class AlWindowEditor extends React.Component {
                 let additionalClass = i == 0 ? 'yes' : 'no';
                 let yesPath = (
                     <path  fill="white"
+                // also add className, key, data-idx to the actual path element. Because on click or on mouse up
+                // if the pointer lands on the path element rather than the svg background, we want the link
+                // to also connect, and not disappear mysteriously
                         className="alweOutput"
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
@@ -838,6 +837,67 @@ class AlWindowEditor extends React.Component {
             </div>
         );
     };
+    
+    // returns a method of 2 parameter that allows the component edit window 
+    // to change the component type
+    getChangeNodeTypeFcn = (nodeId) => {
+        let nodeIdToDescriptor = this.getNodeIdToNodeDescriptor();
+        let nodeInfo = nodeIdToDescriptor[nodeId];
+        if (!nodeInfo) {
+            return () => {};
+        }
+        let componentRegistry = this.props.componentRegistry;
+        return (newNodeType /*string*/, newData /*optional map {}*/) => {
+            if (newNodeType == nodeInfo.nodeType) {
+                return;
+            }
+            let compDesc = this.getComponentDescriptor(newNodeType);
+            if (!compDesc) {
+                compDesc = {
+                    defaultDataFcn: () => {},
+                    numInputs: 1,
+                    numOutputs: 1,
+                    yesNoOutput: false,
+                };
+            }
+            let numInputs = compDesc.numInputs;
+            let numOutputs = compDesc.numOutputs;
+            let newNodeDescriptor = [...this.state.nodeDescriptors] || [];
+            let i = 0;
+            // change the node type
+            for (i = 0; i < newNodeDescriptor.length; ++i) {
+                if (newNodeDescriptor[i].nodeId == nodeId) {
+                    newNodeDescriptor[i].nodeType = newNodeType;
+                    newNodeDescriptor[i].data = newData || compDesc.defaultDataFcn();
+                    newNodeDescriptor[i].numInputs = numInputs;
+                    newNodeDescriptor[i].numOutputs = numOutputs;
+                    newNodeDescriptor[i].yesNoOutput= compDesc.yesNoOutput;
+                    break;
+                }
+            }
+            // remove links that are nolonger valid : too many relative to the new
+            //  number of in/outputs
+            let tempNodeLinks = [...this.state.nodeLinks] || [];
+            let newNodeLinks = [];
+            for (i = 0; i < tempNodeLinks.length; ++i) {
+                let [outNodeId, outNodeIdx, inNodeId, inNodeIdx] = tempNodeLinks[i];
+                let toDelete = false;
+                if (outNodeId == nodeId && outNodeIdx > (numOutputs - 1)) {
+                    toDelete = true;
+                }
+                if (inNodeId == nodeId && inNodeIdx > (numInputs - 1)) {
+                    toDelete = true;
+                }
+                if ( ! toDelete) {
+                    newNodeLinks.push([outNodeId, outNodeIdx, inNodeId, inNodeIdx]);
+                }
+            }
+            this.setState({
+                nodeDescriptors: newNodeDescriptor,
+                nodeLinks: newNodeLinks,
+            });
+        }; // END OF return (...)
+    }
 
     getOutputInputLinkSVGs = () => {
         let nodeDescriptors = this.state.nodeDescriptors;
@@ -851,7 +911,7 @@ class AlWindowEditor extends React.Component {
         let i = 0;
         let returnSvgs = [];
         let nodeIdToDescriptor = this.getNodeIdToNodeDescriptor();
-console.log('nodeidToDescriptor', nodeIdToDescriptor);
+
 
         for (i = 0; i < nodeLinks.length; ++i) {
             // nodeLinks[i]: 4 tuple (outNodeId, outNodeOutIdx, inNodeid, inNodeInIdx)
@@ -1101,6 +1161,7 @@ console.log('nodeidToDescriptor', nodeIdToDescriptor);
                             updater={this.getDataUpdaterFcnForNodeId(
                                 editorNodeIdNodeDescriptor[0].nodeId
                             )}
+                            changeType={this.getChangeNodeTypeFcn(this.state.editorSelectedNodeId)}
                         />
                     );
                 }
@@ -1230,8 +1291,11 @@ AlWindowEditor.propTypes = {
                                                 "height": 103
                                                 }
       componentEdit : React component that is displayed to edit the component attributes
-                        Props : "data" : up to date data for the component
+                        Props : 
+                                "data" : the up to date data for the component
                                 "updater": function of 1 parameter (the data) to update data
+                                "changeType": a function of 2 parameters : (newComponentTypeName (string), newData (optional map {}))
+                                                        that allows the component to be changed to another , registered componentTypeName
     }
     */
     /*

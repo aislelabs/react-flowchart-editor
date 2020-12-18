@@ -25,7 +25,11 @@ class DummyWindow extends React.Component {
 }
 class DummyEdit extends React.Component {
     render() {
-        return (<div style={{"width": "100%", "margin": "0 auto", "height": "200px"}}>Dummy Editor : nothing to edit</div>);
+
+        return (<div style={{"width": "100%", "margin": "0 auto", "height": "200px"}}>
+	    <div>Dummy Editor : nothing to edit</div>
+	    <div><a href="#!" onClick={(clkEvt) => {this.props.changeType('NOEXISTageselector', null)  }}>Click here to change to Age filter type</a></div>
+	</div>);
     }
 }
 

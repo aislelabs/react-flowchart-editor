@@ -13,7 +13,7 @@ let DummySelect = function (props) {
 }
 class DummyWindow extends React.Component {
     render() {
-        return (<div style={{"width": "100%", "margin": "0 auto", "height": "64px"}}>Dummy Object In A Window</div>);
+        return (<div style={{"width": "100%", "margin": "0 auto", "height": "64px", "display": "flex", "alignItems": 'center'}}>Dummy Object In A Window</div>);
     }
 }
 class DummyEdit extends React.Component {
@@ -128,7 +128,7 @@ class App extends Component{
                 "numInputs": 2,
                 "numOutputs": 3,
                 "initialWidthPx": 200,
-                "initialHeightPx": 100,
+                "initialHeightPx": 120,
                 "componentSelect": DummySelect,
                 "componentWindow": DummyWindow,
                 "componentEdit": DummyEdit,
@@ -142,7 +142,7 @@ class App extends Component{
                 "numOutputs": 2,
                 "yesNoOutput": false,
                 "initialWidthPx": 200,
-                "initialHeightPx": 174,
+                "initialHeightPx": 180,
                 "componentSelect": PictureSelect,
                 "componentWindow": PictureWindow,
                 "componentEdit": PictureEdit,
@@ -156,7 +156,7 @@ class App extends Component{
                 "numOutputs": 2,
                 "yesNoOutput": true,
                 "initialWidthPx": 200,
-                "initialHeightPx": 140,
+                "initialHeightPx": 90,
                 "componentSelect": AgeSelect,
                 "componentWindow": AgeWindow,
                 "componentEdit": AgeEdit,

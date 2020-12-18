@@ -40,7 +40,17 @@
   transform:translate(-19999px,-19999px);
   cursor:pointer;
 }
+.topCanvas path.bluePath.svg_stroke_dash_array {
+    stroke-dasharray: 10,10;
+}
 
+/* output node from a yes no , yes node */
+.topCanvas path.bluePath.output_yes {
+  stroke: var(--alWE-color-yes);
+}
+.topCanvas path.bluePath.output_no {
+  stroke: var(--alWE-color-no);
+}
 
 
 /* ******************************************************************* */

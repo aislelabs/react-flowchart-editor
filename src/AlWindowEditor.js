@@ -45,6 +45,7 @@ class AlWindowEditor extends React.Component {
             //   "data": {},
             //   "numInputs": 1,
             //   "numOutputs": 1,
+            //   "yesNoOutput":  false,
             //   "display": {
             //     "offsetX": 43.5,
             //     "offsetY": 65,
@@ -490,7 +491,7 @@ class AlWindowEditor extends React.Component {
                             data: componentDescriptor.defaultDataFcn(),
                             numInputs: componentDescriptor.numInputs,
                             numOutputs: componentDescriptor.numOutputs,
-                            yesNoOutput: componentDescriptor.yesNoOutput,
+                            yesNoOutput: componentDescriptor.yesNoOutput || false,
                             display: {
                                 offsetX: ptrX,
                                 offsetY: ptrY,
@@ -832,6 +833,7 @@ class AlWindowEditor extends React.Component {
         let i = 0;
         let returnSvgs = [];
         let nodeIdToDescriptor = this.getNodeIdToNodeDescriptor();
+console.log('nodeidToDescriptor', nodeIdToDescriptor);
 
         for (i = 0; i < nodeLinks.length; ++i) {
             // nodeLinks[i]: 4 tuple (outNodeId, outNodeOutIdx, inNodeid, inNodeInIdx)
@@ -842,6 +844,8 @@ class AlWindowEditor extends React.Component {
             let numOutStubs = nodeIdToDescriptor[outNodeId].numOutputs;
             let inNodeDisplay = nodeIdToDescriptor[inNodeId].display;
             let numInStubs = nodeIdToDescriptor[inNodeId].numInputs;
+            // whether or not the output node is a yes/no output output
+            let isYesNoOutput = nodeIdToDescriptor[outNodeId].yesNoOutput || false;
             
             // this is in the AlWindowEditor.css
             let inputNodePixelSize = 18 + 6 * 2;
@@ -856,6 +860,15 @@ class AlWindowEditor extends React.Component {
                          /* for the first input node, add 1/2 the input node width. 2nd input node, add 1.5 input node width */
                          (inputNodePixelSize) * ((inNodeIdx + 1) - 0.5);
             let y1 = inNodeDisplay.offsetY;
+            let additionalLinkClassName = '';
+            if (isYesNoOutput === true) {
+                if (outNodeIdx == 0) {
+                    additionalLinkClassName = 'output_yes';
+                }
+                if (outNodeIdx == 1) {
+                    additionalLinkClassName = 'output_no';
+                }
+            }
 
             
             let curveClickDeleteHandler = (e) => {
@@ -868,7 +881,8 @@ class AlWindowEditor extends React.Component {
                 x1,
                 y1,
                 `outlink_${outNodeId}_${outNodeIdx}_${inNodeId}_${inNodeIdx}`,
-                curveClickDeleteHandler
+                curveClickDeleteHandler,
+                additionalLinkClassName
             );
             returnSvgs.push(domSvg);
         }
@@ -881,7 +895,8 @@ class AlWindowEditor extends React.Component {
         x1,
         y1,
         svgReactElementKey /*optional*/,
-        curveClickHandler /*optional*/
+        curveClickHandler /*optional*/,
+        additionalClassNames /*optional string*/,
     ) => {
         
         let curvature = 0.5;
@@ -922,7 +937,8 @@ class AlWindowEditor extends React.Component {
                 xmlns="http://www.w3.org/2000/svg"
                 key={svgReactElementKey}
                 onClick={curveClickHandler}>
-                <path xmlns="http://www.w3.org/2000/svg" className={'bluePath'} d={pathd} />
+                <path xmlns="http://www.w3.org/2000/svg" className={`bluePath ${additionalClassNames}`} 
+                    d={pathd} />
             </svg>
         );
     };
@@ -965,7 +981,8 @@ class AlWindowEditor extends React.Component {
                 this.state.currentMouseX - 1,
                 this.state.currentMouseY - 1,
                 null,
-                null
+                null,
+                'svg_stroke_dash_array'
             );
         }
 

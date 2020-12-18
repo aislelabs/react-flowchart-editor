@@ -30,6 +30,7 @@ class AlWindowEditor extends React.Component {
 
             currentMouseX: -1,
             currentMouseY: -1,
+            mouseDownMillis: -1,
             mouseDownX: -1,
             mouseDownY: -1,
             mouseDownOffsetX: -1,
@@ -185,6 +186,7 @@ class AlWindowEditor extends React.Component {
     ////////////////////////////////////////////////////////////////////////////////
     canvasmousedown = (e) => {
         let dom = e.target;
+
         let canvas = dom.closest('.topCanvas');
         if (dom.classList.contains('alweResizeBox')) {
             if (this.props.viewOnly) {
@@ -202,6 +204,7 @@ class AlWindowEditor extends React.Component {
                     resizeSelectedNodeId: parseInt(closestNodeWrapper.dataset.nodeId),
                     mouseDownX: e.clientX - canvas.getBoundingClientRect().left,
                     mouseDownY: e.clientY - canvas.getBoundingClientRect().top,
+
                 });
             }
         } else if (
@@ -213,6 +216,7 @@ class AlWindowEditor extends React.Component {
             }
             let closestNodeWrapper = dom.closest('.alweNodeWrapper');
             if (closestNodeWrapper != null) {
+                let epoch = (new Date()).getTime();
                 let mouseDownContentNodeId = closestNodeWrapper.dataset.nodeId;
                 let offsetX = e.clientX - closestNodeWrapper.getBoundingClientRect().left;
                 let offsetY = e.clientY - closestNodeWrapper.getBoundingClientRect().top;
@@ -224,6 +228,8 @@ class AlWindowEditor extends React.Component {
                     contentSelectedNodeId: parseInt(mouseDownContentNodeId),
                     mouseDownOffsetX: offsetX,
                     mouseDownOffsetY: offsetY,
+                    
+                    mouseDownMillis: epoch,
                 });
             }
         } else if (dom.classList.contains('alweOutput')) {
@@ -246,6 +252,7 @@ class AlWindowEditor extends React.Component {
                         (e.clientY - canvas.getBoundingClientRect().top) / this.state.canvasScale,
                     outputSelectedNodeId: parseInt(closestNodeWrapper.dataset.nodeId),
                     outputSelectedIdx: parseInt(outputIdx),
+
                 });
             }
         } else if (dom.classList.contains('topCanvas')) {
@@ -256,6 +263,7 @@ class AlWindowEditor extends React.Component {
                 canvasMoveSelected: 1,
                 mouseDownX: (e.clientX - dom.getBoundingClientRect().left) / this.state.canvasScale,
                 mouseDownY: (e.clientY - dom.getBoundingClientRect().top) / this.state.canvasScale,
+
             });
         }
     };
@@ -419,15 +427,18 @@ class AlWindowEditor extends React.Component {
         });
     };
 
-    canvasDoubleClick = (e) => {
+    canvasClick = (e) => {
         let dom = e.target;
         let closestNodeWrapper = dom.closest('.alweNodeWrapper');
         if (closestNodeWrapper != null) {
             if (this.props.viewOnly) {
                 return;
             }
+            let epochNow = (new Date()).getTime();
             let doubleClickedNodeId = closestNodeWrapper.dataset.nodeId;
-            if (doubleClickedNodeId != null && doubleClickedNodeId > -1) {
+
+            if (doubleClickedNodeId != null && doubleClickedNodeId > -1 &&
+                ((epochNow - this.state.mouseDownMillis) < 64)) {
                 this.setState({
                     editorAreaOpen: true,
                     editorSelectedNodeId: doubleClickedNodeId,
@@ -1098,7 +1109,7 @@ class AlWindowEditor extends React.Component {
                     onMouseUp={this.canvasmouseup}
                     onMouseMove={this.canvasmousemove}
                     onWheel={this.canvaswheel}
-                    onDoubleClick={this.canvasDoubleClick}
+                    onClick={this.canvasClick}
                     onDrop={this.canvasdrop}
                     onDragOver={(e) => {
                         e.preventDefault();

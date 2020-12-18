@@ -853,12 +853,13 @@ class AlWindowEditor extends React.Component {
             }
             let compDesc = this.getComponentDescriptor(newNodeType);
             if (!compDesc) {
-                compDesc = {
+                throw 'componentTypeName ' + newNodeType + ' is invalid (component not registered or typo)';
+                /*compDesc = {
                     defaultDataFcn: () => {},
                     numInputs: 1,
                     numOutputs: 1,
                     yesNoOutput: false,
-                };
+                };*/
             }
             let numInputs = compDesc.numInputs;
             let numOutputs = compDesc.numOutputs;
@@ -1295,7 +1296,8 @@ AlWindowEditor.propTypes = {
                                 "data" : the up to date data for the component
                                 "updater": function of 1 parameter (the data) to update data
                                 "changeType": a function of 2 parameters : (newComponentTypeName (string), newData (optional map {}))
-                                                        that allows the component to be changed to another , registered componentTypeName
+                                                        that allows the component to be changed to another , registered componentTypeName.
+                                                        This method will throw an exception if newComponentTypeName is not a registered component.
     }
     */
     /*

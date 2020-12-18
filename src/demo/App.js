@@ -13,7 +13,14 @@ let DummySelect = function (props) {
 }
 class DummyWindow extends React.Component {
     render() {
-        return (<div style={{"width": "100%", "margin": "0 auto", "height": "64px", "display": "flex", "alignItems": 'center'}}>Dummy Object In A Window</div>);
+        return (<div className="container_window ">
+	    <div className="top_banner brown nodecontent">
+	        Wait time
+	    </div>
+	    <div className="window_content">
+	        Dummy Object in Window
+	    </div>
+	</div>);
     }
 }
 class DummyEdit extends React.Component {
@@ -41,10 +48,17 @@ class PictureWindow extends React.Component {
         }
         selected = parseInt(selected);
         let pictureSrc = imageLinks[selected];
-        return (<div style={{"width": "100%", "margin": "0 auto", "minHeight": "64px"}}>
-            <img style={{"display": "block", "margin": "0 auto"}} src={pictureSrc} />
+	    
+        return (<div className="container_window ">
+	    <div className="top_banner darkgreen nodecontent">
+	        Decision
+	    </div>
+	    <div className="window_content">
+	        <img style={{"display": "block", "margin": "0 auto"}} src={pictureSrc} />
             You have selected idx = {selected} : {pictureSrc}
-        </div>);
+	    </div>
+	</div>);
+	    
     }
 }
 class PictureEdit extends React.Component {
@@ -80,13 +94,20 @@ let AgeSelect = function (props) {
 class AgeWindow extends React.Component {
     state = {}
     render() {
-        return (<div style={{"width": "100%", "margin": "0 auto", "height": "100%", "minHeight": "24px",
-                             "textAlign": "center", "display": "flex", "justifyContent": "center", "alignItems": "center"}}>
-            <div style={{"fontSize": "18px"}}>
-            User's &nbsp;<span style={{"borderBottom": "1px dotted #000"}}>age</span>&nbsp;
-            is between <span style={{"borderBottom": "1px solid #000"}}>{this.props.data.agerange}</span>
-            </div>
-        </div>);
+
+	    
+        return (<div className="container_window ">
+	    <div className="top_banner darkpurple nodecontent">
+	        A/B Testing
+	    </div>
+	    <div className="window_content">
+			    <div style={{"fontSize": "18px"}}>
+			    User's &nbsp;<span style={{"borderBottom": "1px dotted #000"}}>age</span>&nbsp;
+			    is between <span style={{"borderBottom": "1px solid #000"}}>{this.props.data.agerange}</span>
+			    </div>
+	    </div>
+	</div>);
+	    
     }
 }
 class AgeEdit extends React.Component {
@@ -121,17 +142,18 @@ class App extends Component{
         let nodeLinks = [];
         let componentRegistry =[
             {
-                "componentTypeName": "dummy",
-                "componentGroup": "group0",
-                "componentSearchText": "dummy",
-                "defaultDataFcn": function() {return {};},
-                "numInputs": 2,
-                "numOutputs": 3,
-                "initialWidthPx": 200,
-                "initialHeightPx": 120,
-                "componentSelect": DummySelect,
-                "componentWindow": DummyWindow,
-                "componentEdit": DummyEdit,
+                "componentTypeName": "ageselector",
+                "componentGroup": "group2",
+                "componentSearchText": "person age old",
+                "defaultDataFcn": function() {return {"agerange": '18 ~ 24'};},
+                "numInputs": 1,
+                "numOutputs": 2,
+                "yesNoOutput": true,
+                "initialWidthPx": 300,
+                "initialHeightPx": 150,
+                "componentSelect": AgeSelect,
+                "componentWindow": AgeWindow,
+                "componentEdit": AgeEdit,
             },
             {
                 "componentTypeName": "pictureselector",
@@ -141,25 +163,24 @@ class App extends Component{
                 "numInputs": 1,
                 "numOutputs": 2,
                 "yesNoOutput": false,
-                "initialWidthPx": 200,
+                "initialWidthPx": 300,
                 "initialHeightPx": 180,
                 "componentSelect": PictureSelect,
                 "componentWindow": PictureWindow,
                 "componentEdit": PictureEdit,
             },
             {
-                "componentTypeName": "ageselector",
-                "componentGroup": "group2",
-                "componentSearchText": "person age old",
-                "defaultDataFcn": function() {return {"agerange": '18 ~ 24'};},
-                "numInputs": 1,
-                "numOutputs": 2,
-                "yesNoOutput": true,
-                "initialWidthPx": 200,
-                "initialHeightPx": 90,
-                "componentSelect": AgeSelect,
-                "componentWindow": AgeWindow,
-                "componentEdit": AgeEdit,
+                "componentTypeName": "dummy",
+                "componentGroup": "group0",
+                "componentSearchText": "dummy",
+                "defaultDataFcn": function() {return {};},
+                "numInputs": 2,
+                "numOutputs": 3,
+                "initialWidthPx": 300,
+                "initialHeightPx": 120,
+                "componentSelect": DummySelect,
+                "componentWindow": DummyWindow,
+                "componentEdit": DummyEdit,
             },
         ];
         let updateCbkFcn = (nodeDescriptors, nodeLinks) => {

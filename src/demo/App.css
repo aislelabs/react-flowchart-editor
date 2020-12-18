@@ -14,3 +14,39 @@
   font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif;
   font-size: 14px;
 }
+
+div.container_window {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+div.top_banner {
+	color: white;
+	margin: 0;
+    width: 100%;
+	height: 34px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+div.window_content {
+	margin: 0;
+	width: 100%;
+	height: calc(100% - 34px); /* 100% - 34px top banner height */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.brown {
+    background: #e38f3b;
+}
+.darkgreen {
+    background: #216f6f;
+}
+.darkblue {
+	background: #216f6f;
+}
+.darkpurple {
+	background: #7e4463;
+}
+

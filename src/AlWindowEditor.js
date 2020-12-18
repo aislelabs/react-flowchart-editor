@@ -493,7 +493,7 @@ class AlWindowEditor extends React.Component {
                             numOutputs: componentDescriptor.numOutputs,
                             yesNoOutput: componentDescriptor.yesNoOutput || false,
                             display: {
-                                offsetX: ptrX,
+                                offsetX: parseInt(ptrX - componentDescriptor.initialWidthPx * 0.5),
                                 offsetY: ptrY,
                                 width: componentDescriptor.initialWidthPx,
                                 height: componentDescriptor.initialHeightPx,
@@ -698,7 +698,6 @@ class AlWindowEditor extends React.Component {
         }
         
 
-        let downArrowSvgPath = (<path  fill="white" d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
         let inputElements = [];
         for (i = 0; i < numInputs; ++i) {
             let inputElm = null;
@@ -706,6 +705,13 @@ class AlWindowEditor extends React.Component {
             if (inputActive[i] == 1) {
                 activeStr = 'active';
             }
+
+        let downArrowSvgPath = (<path 
+                    className="alweInput"
+                    key={'alweInput_' + i}
+                    data-idx={'input_' + i}
+           fill="white" 
+           d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
             let downArrowSvg = (
                 <svg  
                     className={`alweInput ${activeStr}`}
@@ -720,21 +726,12 @@ class AlWindowEditor extends React.Component {
             inputElements.push(
                 downArrowSvg
             );
-                                                /*<div
+                /*<div
                     className={`alweInput ${activeStr}`}
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
                 />*/
         }
-        let yesPath = (
-            <path fill="white" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-        );
-        let noPath = (
-            <path
-                fill="white"
-                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-            />
-        );
         let outputElements = [];
         for (i = 0; i < numOutputs; ++i) {
             let activeStr = '';
@@ -743,6 +740,21 @@ class AlWindowEditor extends React.Component {
             }
             if (numOutputs == 2 && isYesNoOutput === true) {
                 let additionalClass = i == 0 ? 'yes' : 'no';
+                let yesPath = (
+                    <path  fill="white"
+                        className="alweOutput"
+                        key={'alweOutput_' + i}
+                        data-idx={'output_' + i}
+                        d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                );
+                let noPath = (
+                    <path fill="white"
+                        className="alweOutput"
+                        key={'alweOutput_' + i}
+                        data-idx={'output_' + i}
+                        d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                    />
+                );
                 outputElements.push(
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -754,7 +766,13 @@ class AlWindowEditor extends React.Component {
                     </svg>
                 );
             } else {
-                            let downArrowSvg = (
+                let downArrowSvgPath = (<path 
+                    className="alweOutput"
+                    key={'alweOutput_' + i}
+                    data-idx={'output_' + i}
+                   fill="white" 
+                   d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
+                let downArrowSvg = (
                 <svg  
                         className={`alweOutput ${activeStr}`}
                         key={'alweOutput_' + i}

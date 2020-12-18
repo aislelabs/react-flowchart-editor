@@ -712,13 +712,13 @@ class AlWindowEditor extends React.Component {
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
            fill="white" 
-           d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
+           d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
             let downArrowSvg = (
                 <svg  
                     className={`alweInput ${activeStr}`}
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
-                    viewBox="0 0 512 512"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                 {downArrowSvgPath}
@@ -770,13 +770,13 @@ class AlWindowEditor extends React.Component {
                     key={'alweOutput_' + i}
                     data-idx={'output_' + i}
                    fill="white" 
-                   d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
+                   d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
                 let downArrowSvg = (
                 <svg  
                         className={`alweOutput ${activeStr}`}
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
-                    viewBox="0 0 512 512"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                 {downArrowSvgPath}
@@ -927,7 +927,7 @@ class AlWindowEditor extends React.Component {
             let isYesNoOutput = nodeIdToDescriptor[outNodeId].yesNoOutput || false;
             
             // this is in the AlWindowEditor.css
-            let inputNodePixelSize = 14 + 6 * 2;
+            let inputNodePixelSize = 14 + 4 * 2;
             let outputNodePixelSize = 27 + 8 * 2;
             let x0 = outNodeDisplay.offsetX + 
                           (outNodeDisplay.width - numOutStubs * outputNodePixelSize) * 0.5 +

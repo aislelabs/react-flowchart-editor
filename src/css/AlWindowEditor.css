@@ -119,7 +119,7 @@
   background: var(--alWE-default-blue);
   position: relative;
   top: -16px;
-  padding: 2px 2px;
+  /*padding: 2px 2px;*/
   margin: 0 3px;
 }
 

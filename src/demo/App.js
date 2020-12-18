@@ -104,7 +104,7 @@ class AgeWindow extends React.Component {
 	    <div className="top_banner darkpurple nodecontent">
 	        A/B Testing
 	    </div>
-	    <div className="window_content">
+	    <div className="window_content nodecontent">
 			    <div style={{"fontSize": "18px"}}>
 			    User's &nbsp;<span style={{"borderBottom": "1px dotted #000"}}>age</span>&nbsp;
 			    is between <span style={{"borderBottom": "1px solid #000"}}>{this.props.data.agerange}</span>

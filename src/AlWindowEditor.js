@@ -927,7 +927,7 @@ class AlWindowEditor extends React.Component {
             let isYesNoOutput = nodeIdToDescriptor[outNodeId].yesNoOutput || false;
             
             // this is in the AlWindowEditor.css
-            let inputNodePixelSize = 18 + 6 * 2;
+            let inputNodePixelSize = 14 + 6 * 2;
             let outputNodePixelSize = 27 + 8 * 2;
             let x0 = outNodeDisplay.offsetX + 
                           (outNodeDisplay.width - numOutStubs * outputNodePixelSize) * 0.5 +

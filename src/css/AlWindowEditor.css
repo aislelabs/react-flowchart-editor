@@ -113,8 +113,8 @@
 
 .alweNodeWrapper .alweInputs .alweInput {
   background: #fff;
-  height: 18px;
-  width: 18px;
+  height: 14px;
+  width: 14px;
   border : 1px solid var(--alWE-default-blue);
   background: var(--alWE-default-blue);
   position: relative;

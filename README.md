@@ -4,7 +4,7 @@ resizing and workspace panning. Simple component plugin architecture to allow ea
 No additional package dependency. 
 
 ##
-![GIFDEMO](https://media.giphy.com/media/Kg8rEU55PgbyfjtF23/giphy.gif)
+![GIFDEMO](https://i.ibb.co/PMzb219/ezgif-com-resize.gif)
 
 
 # Live Demo:
@@ -21,7 +21,7 @@ import FlowchartEditor from '@aislelabs/react-flowchart-editor';
 [Sample Application](https://github.com/aislelabs/react-flowchart-editor/blob/master/src/demo/App.js)
 
 # Component API Documentation:
-[API Documentation](https://github.com/aislelabs/react-flowchart-editor/blob/master/src/AlWindowEditor.js#L1042)
+[API Documentation](https://github.com/aislelabs/react-flowchart-editor/blob/master/src/AlWindowEditor.js#L1249)
 
  
 # Build demo:

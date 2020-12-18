@@ -59,7 +59,7 @@ class AlWindowEditor extends React.Component {
             nodeLinks: props.initialNodeLinks ? [...props.initialNodeLinks] : [],
 
             // states for left component area:
-            componentAreaOpen: false,
+            componentAreaOpen: props.componentAreaOpen || false,
             // states for right editor component area:
             editorAreaOpen: false,
             // the search box at the top of the component area:
@@ -438,7 +438,7 @@ class AlWindowEditor extends React.Component {
             let doubleClickedNodeId = closestNodeWrapper.dataset.nodeId;
 
             if (doubleClickedNodeId != null && doubleClickedNodeId > -1 &&
-                ((epochNow - this.state.mouseDownMillis) < 64)) {
+                ((epochNow - this.state.mouseDownMillis) < 100)) {
                 this.setState({
                     editorAreaOpen: true,
                     editorSelectedNodeId: doubleClickedNodeId,
@@ -695,7 +695,9 @@ class AlWindowEditor extends React.Component {
                 inputActive[linkage[3]] = 1;
             }
         }
+        
 
+        let downArrowSvgPath = (<path  fill="white" d="M505.755,123.592c-8.341-8.341-21.824-8.341-30.165,0L256.005,343.176L36.421,123.592c-8.341-8.341-21.824-8.341-30.165,0s-8.341,21.824,0,30.165l234.667,234.667c4.16,4.16,9.621,6.251,15.083,6.251c5.462,0,10.923-2.091,15.083-6.251l234.667-234.667C514.096,145.416,514.096,131.933,505.755,123.592z"/>);
         let inputElements = [];
         for (i = 0; i < numInputs; ++i) {
             let inputElm = null;
@@ -703,20 +705,32 @@ class AlWindowEditor extends React.Component {
             if (inputActive[i] == 1) {
                 activeStr = 'active';
             }
-            inputElements.push(
-                <div
+            let downArrowSvg = (
+                <svg  
                     className={`alweInput ${activeStr}`}
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
-                />
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                {downArrowSvgPath}
+                </svg>
+        );
+            inputElements.push(
+                downArrowSvg
             );
+                                                /*<div
+                    className={`alweInput ${activeStr}`}
+                    key={'alweInput_' + i}
+                    data-idx={'input_' + i}
+                />*/
         }
         let yesPath = (
-            <path fill="black" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+            <path fill="white" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
         );
         let noPath = (
             <path
-                fill="black"
+                fill="white"
                 d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
             />
         );
@@ -727,10 +741,11 @@ class AlWindowEditor extends React.Component {
                 activeStr = 'active';
             }
             if (numOutputs == 2 && isYesNoOutput === true) {
+                let additionalClass = i == 0 ? 'yes' : 'no';
                 outputElements.push(
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={`alweOutput ${activeStr}`}
+                        className={`alweOutput ${activeStr} ${additionalClass}`}
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
                         viewBox="0 0 24 24">
@@ -738,12 +753,19 @@ class AlWindowEditor extends React.Component {
                     </svg>
                 );
             } else {
-                outputElements.push(
-                    <div
+                            let downArrowSvg = (
+                <svg  
                         className={`alweOutput ${activeStr}`}
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
-                    />
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                {downArrowSvgPath}
+                </svg>);
+                
+                outputElements.push(
+                    downArrowSvg
                 );
             }
         }
@@ -820,27 +842,26 @@ class AlWindowEditor extends React.Component {
             let numOutStubs = nodeIdToDescriptor[outNodeId].numOutputs;
             let inNodeDisplay = nodeIdToDescriptor[inNodeId].display;
             let numInStubs = nodeIdToDescriptor[inNodeId].numInputs;
-            // XXX
-            // "15" : in css : .nodewrapper .outputs .output
-            //                     .nodewrapper .inputs .input
-            let stubWidth = 15;
-            let stubHeight = 15;
-            // calculate the input/output positions relative to the "canvas"
-            let x0 = outNodeDisplay.offsetX + stubWidth * 0.5 + outNodeDisplay.width;
-            let y0 =
-                0.5 * (outNodeDisplay.height - numOutStubs * stubHeight) +
-                stubHeight * outNodeIdx +
-                stubHeight * 0.5 +
-                outNodeDisplay.offsetY;
-            let x1 = inNodeDisplay.offsetX - stubWidth * 0.5;
-            let y1 =
-                0.5 * (inNodeDisplay.height - numInStubs * stubHeight) +
-                stubHeight * inNodeIdx +
-                stubHeight * 0.5 +
-                inNodeDisplay.offsetY;
+            
+            // this is in the AlWindowEditor.css
+            let inputNodePixelSize = 18 + 6 * 2;
+            let outputNodePixelSize = 27 + 8 * 2;
+            let x0 = outNodeDisplay.offsetX + 
+                          (outNodeDisplay.width - numOutStubs * outputNodePixelSize) * 0.5 +
+                          (outputNodePixelSize) * ((outNodeIdx + 1) - 0.5);
+            let y0 = outNodeDisplay.offsetY + outNodeDisplay.height ;
+            let x1 = inNodeDisplay.offsetX + 
+                          /* adds 1/2 of the whitespace left in the width dimension */
+                         (inNodeDisplay.width - numInStubs * inputNodePixelSize) * 0.5 +
+                         /* for the first input node, add 1/2 the input node width. 2nd input node, add 1.5 input node width */
+                         (inputNodePixelSize) * ((inNodeIdx + 1) - 0.5);
+            let y1 = inNodeDisplay.offsetY;
+
+            
             let curveClickDeleteHandler = (e) => {
                 this.removeOutputInputLinkToState([outNodeId, outNodeIdx, inNodeId, inNodeIdx]);
             };
+            
             let domSvg = this.getSvgPointAB(
                 x0,
                 y0,
@@ -862,12 +883,15 @@ class AlWindowEditor extends React.Component {
         svgReactElementKey /*optional*/,
         curveClickHandler /*optional*/
     ) => {
+        
         let curvature = 0.5;
+        /*
         let p = Math.abs(x1 - x0) * curvature;
         let hx1 = x0 + p;
         let hx2 = x1 - p;
         let pathd = `M ${x0} ${y0} C ${hx1} ${y0} ${hx2} ${y1} ${x1} ${y1}`;
-        /*
+        */
+        
         let isLeftRight = x0 < x1;
         let isTopDown = y0 < y1;
         let width = Math.abs(x0 - x1);
@@ -892,7 +916,7 @@ class AlWindowEditor extends React.Component {
             let hy2 = y1 - p;
             pathd = `M ${x0} ${y0} C ${x0} ${hy1} ${x1} ${hy2} ${x1} ${y1}`;
         }
-*/
+
         return (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -958,16 +982,18 @@ class AlWindowEditor extends React.Component {
             let componentRegistry = this.props.componentRegistry;
             let componentFilterJsx = (
                 <div key={'componentFilter'} className={`alweComponentFilter`}>
-                    {this.getMagnifyingGlassSvg(16, 16)}
+
                     <input
                         type={'text'}
                         placeholder={'Search'}
                         value={this.state.componentSearchText}
                         onChange={this.onComponentSearchTextChange}
                     />
+                    {this.getMagnifyingGlassSvg(16, 16)}
                 </div>
             );
-            let componentJsxList = [componentFilterJsx];
+            let topNotifierJsx = (<div className={'topComponentInfoBox'}>Drag and drop to add node</div>);
+            let componentJsxList = [topNotifierJsx, componentFilterJsx];
             let i = 0;
             let componentNameConsidered = {};
             let searchInputText = this.state.componentSearchText;
@@ -1126,6 +1152,11 @@ class AlWindowEditor extends React.Component {
 AlWindowEditor.propTypes = {
     // viewOnly : if true, disables all editing functionalities
     viewOnly: PropTypes.bool,
+    
+    // componentAreaOpen the default state (boolean) of the component window; Whether or not the component
+    // selector window will open by default.
+    componentAreaOpen: PropTypes.bool, 
+    
     // pointerDiscretization : if specified, must be an integer >= 1. This is used to discretize the coordinates
     //      on the main window (so window resize, window move moves in a square grid of this specific size)
     pointerDiscretization: PropTypes.number,

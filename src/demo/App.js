@@ -26,7 +26,7 @@ class DummyEdit extends React.Component {
 /*****************************************************/
 /*****************************************************/
 let PictureSelect = function (props) {
-    return (<div ><img style={{"height": "32px", "display": "inline-block"}} src={"./img/barcodeQR.png"} /> Picture Selector</div>);
+    return (<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}><img style={{"height": "32px", "display": "inline-block"}} src={"./img/barcodeQR.png"} /><span>Picture Selector</span></div>);
 }
 class PictureWindow extends React.Component {
     render() {
@@ -125,10 +125,10 @@ class App extends Component{
                 "componentGroup": "group0",
                 "componentSearchText": "dummy",
                 "defaultDataFcn": function() {return {};},
-                "numInputs": 1,
+                "numInputs": 2,
                 "numOutputs": 3,
-                "initialWidthPx": 120,
-                "initialHeightPx": 80,
+                "initialWidthPx": 200,
+                "initialHeightPx": 100,
                 "componentSelect": DummySelect,
                 "componentWindow": DummyWindow,
                 "componentEdit": DummyEdit,
@@ -141,7 +141,7 @@ class App extends Component{
                 "numInputs": 1,
                 "numOutputs": 2,
                 "yesNoOutput": false,
-                "initialWidthPx": 228,
+                "initialWidthPx": 200,
                 "initialHeightPx": 174,
                 "componentSelect": PictureSelect,
                 "componentWindow": PictureWindow,
@@ -155,8 +155,8 @@ class App extends Component{
                 "numInputs": 1,
                 "numOutputs": 2,
                 "yesNoOutput": true,
-                "initialWidthPx": 395,
-                "initialHeightPx": 111,
+                "initialWidthPx": 200,
+                "initialHeightPx": 140,
                 "componentSelect": AgeSelect,
                 "componentWindow": AgeWindow,
                 "componentEdit": AgeEdit,
@@ -173,6 +173,7 @@ class App extends Component{
 		//  5: '#d25f2e',
 	};
         return <AlWindowEditor viewOnly={false}
+	                       componentAreaOpen={true} 
                                pointerDiscretization={1}
                                initialNodeDescriptors={nodeDescriptors}
                                initialNodeLinks={nodeLinks}

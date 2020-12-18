@@ -3,6 +3,10 @@
   --alWE-pane-boxshadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   --alWE-pane-transition-width: width 0.3s cubic-bezier(.25,.8,.25,1);
   --alWE-pane-transition-all: all 0.3s cubic-bezier(.25,.8,.25,1);
+  --alWE-default-blue: #0473dc;
+  --alWE-default-light-blue: #0473fa;
+  --alWE-color-yes: #51a646;
+  --alWE-color-no: #bb5cff;
 }
 
 .height100 {
@@ -13,7 +17,7 @@
   color: #626262;
   font-size: var(--alWE-font-size);
   position: relative;
-  border: 2px #A0A0A0 dotted;
+  border: 1px #A0A0A0 dashed;
   /*
   background-size: 25px 25px;
   background-image:
@@ -24,15 +28,16 @@
 
 .topCanvas svg {
   position: absolute;
-  transform: translate(9999px,9999px);
+  transform: translate(19999px,19999px);
   overflow: visible!important;
 }
 
 .topCanvas path.bluePath {
   fill: none;
-  stroke: #4ea9ff;
+  /*stroke: #4ea9ff;*/
+  stroke: var(--alWE-default-blue);
   stroke-width: 3px;
-  transform:translate(-9999px,-9999px);
+  transform:translate(-19999px,-19999px);
   cursor:pointer;
 }
 
@@ -51,8 +56,6 @@
   background: #fff;
   position: absolute;
   padding: 0px;
-  display: flex;
-  align-items: center;
   border: 1px solid #cacaca;
   user-select: none;
   box-shadow: var(--alWE-pane-boxshadow);
@@ -63,7 +66,6 @@
   border: 4px solid #217CE8;
 }
 .alweNodeWrapper .nodecontent {
-  padding: 4px 4px;
   cursor: grab;
 }
 
@@ -92,31 +94,41 @@
 /* ******************************************************************* */
 /* ******************************************************************* */
 /* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
 
 
 
-
-.alweNodeWrapper .alweInputs {
-  width: 0px;
+.alweNodeWrapper .alweInputs ,   /*output box here*/  .alweNodeWrapper .alweOutputs {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 0; /* height 0 because the contents are input, output SVG's*/
 }
 .alweNodeWrapper .alweInputs .alweInput {
   background: #fff;
-  height: 15px;
-  width: 15px;
-  border : 1px solid #6495ED;
-  left: -15px;
+  height: 18px;
+  width: 18px;
+  border : 1px solid var(--alWE-default-blue);
+  background: var(--alWE-default-blue);
   cursor: crosshair;
   position: relative;
+  top: -16px;
+  padding: 2px 2px;
+  margin: 0 3px;
+}
+
+.alweNodeWrapper .alweInputs svg.alweInput{
+  transform: none;
 }
 
 .alweNodeWrapper .alweInputs .alweInput:hover, .alweNodeWrapper .alweInputs .alweInput.active {
-  background: #6495ED;
+  background: var(--alWE-default-light-blue);
+  border : 1px solid var(--alWE-default-light-blue);
 }
 
 
 
-
-
 /* ******************************************************************* */
 /* ******************************************************************* */
 /* ******************************************************************* */
@@ -125,27 +137,39 @@
 /* ******************************************************************* */
 
 
-.alweNodeWrapper .alweOutputs {
-  width: 0px;
-}
 .alweNodeWrapper .alweOutputs .alweOutput {
   background: #fff;
   position: relative;
-  height: 15px;
-  width: 15px;
-  border : 1px solid #D01F3C;
+  height: 27px;
+  width: 27px;
+  border : 1px solid var(--alWE-default-blue);
+  background: var(--alWE-default-blue);
   cursor: crosshair;
+  margin: 0 6px;
+  padding: 1px 1px;
+  top: -13px;
 }
 
 .alweNodeWrapper .alweOutputs .alweOutput:hover, .alweNodeWrapper .alweOutputs .alweOutput.active {
-  background: #D01F3C;
+  background: var(--alWE-default-light-blue);
+  border : 1px solid var(--alWE-default-light-blue);
 }
 
 .alweNodeWrapper .alweOutputs svg.alweOutput {
   transform: none;
-  width: 15px;
-  height: 15px;
 }
+.alweNodeWrapper .alweOutputs svg.alweOutput.yes {
+  border : 1px solid var(--alWE-color-yes);
+  background: var(--alWE-color-yes);
+  transform: none;
+}
+.alweNodeWrapper .alweOutputs svg.alweOutput.no {
+  border : 1px solid var(--alWE-color-no);
+  background: var(--alWE-color-no);
+  transform: none;
+}
+
+
 
 /* ******************************************************************* */
 /* ******************************************************************* */
@@ -161,10 +185,9 @@
   position: absolute;
   right: 0px;
   background: #fff;
-  width: 300px;
 }
 .componentArea.open {
-  width: 300px;
+  width: 358px;
   transition: var(--alWE-pane-transition-width);
 }
 .componentArea.closed {
@@ -179,40 +202,42 @@
 
 
 .componentArea .componentContent .alweComponentFilter {
-  padding: 28px 12px;
+
 }
 
 .componentArea .componentContent .alweComponentFilter svg {
   /* for the search magnifying glass */
   position: relative;
-  top: 32px;
-  left: 12px;
+  top: -26px;
+  left: 10px;
 }
 
 .componentArea .componentContent .alweComponentFilter input {
   display: block;
   width: 100%;
-  height: 40px;
   background-color: #FFF;
   border: 1px solid #E8E8EF;
   box-sizing: border-box;
-  box-shadow: var(--alWE-pane-boxshadow);
-  border-radius: 5px;
   text-indent: 35px;
+  line-height: 35px;
   font-size: var(--alWE-font-size);
 }
 
 .componentArea .componentContent.closed {
   display: none;
 }
-.componentArea .componentContent .componentContentItem {
+.componentArea .componentContent .componentContentItem, .componentArea .componentContent .topComponentInfoBox {
   width: 100%;
   user-select: none;
-  padding: 28px 12px;
+  padding: 17px 0px;
   cursor: pointer;
-  text-align: center;
   font-size: var(--alWE-font-size);
   box-sizing: border-box;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
 }
 
 /* component open, close button ">>" */
@@ -220,7 +245,7 @@
   box-shadow: -1px 1px 0px 0px rgba(0,0,0,0.12);
   user-select: none;
   cursor: pointer;
-  position: relative;
+  position: absolute;
   padding: 16px;
   width: 32px;
   left: -63px;
@@ -235,7 +260,8 @@
 
 .componentArea .componentContent .componentContentItem:hover {
   background-color: #f9f9f9;
-  box-shadow: 0 2px 4px 1px rgba(0,0,0,0.22);
+  /*box-shadow: 0 2px 4px 1px rgba(0,0,0,0.22);
+  */
 }
 .componentArea .closeOpenButton .indicator, .componentArea .closeOpenButton .indicator.open {
   transform: rotate(0deg);
@@ -261,11 +287,10 @@
   z-index: 999;
   position: absolute;
   background: #fff;
-  width: 360px;
   right: 1px;
 }
 .editorArea.open {
-  width: 350px;
+  width: 358px;
   transition: var(--alWE-pane-transition-width);
 }
 .editorArea.closed {

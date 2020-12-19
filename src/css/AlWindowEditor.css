@@ -251,9 +251,9 @@
   user-select: none;
   cursor: pointer;
   position: absolute;
-  padding: 16px;
-  width: 32px;
-  left: -63px;
+  width: 48px;
+  height: 48px;
+  left: -48px;
   font-weight: bold;
   text-align: center;
   background-color: #FFF;
@@ -261,6 +261,9 @@
   border-bottom: 1px solid #E8E8EF;
   border-left: 1px solid #E8E8EF;
   border-top: 1px solid #E8E8EF;
+  display: flex;
+	align-items: center;
+    text-align: center;
 }
 
 .componentArea .componentContent .componentContentItem:hover {
@@ -269,10 +272,12 @@
   */
 }
 .componentArea .closeOpenButton .indicator, .componentArea .closeOpenButton .indicator.open {
+	width: 100%;
   transform: rotate(0deg);
   transition: var(--alWE-pane-transition-all);
 }
 .componentArea .closeOpenButton .indicator.closed {
+	width: 100%;
   transform: rotate(180deg);
   transition: var(--alWE-pane-transition-all);
 }

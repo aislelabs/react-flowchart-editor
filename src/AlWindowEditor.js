@@ -587,10 +587,12 @@ class AlWindowEditor extends React.Component {
                             droppedOnWindowNodeOutputIdx == null ||
                             componentDescriptor.numInputs == 0) {
                             this.setState({
+                                targetDropBoxId: -1,
                                 nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
                             });
                         } else {
                             this.setState({
+                                targetDropBoxId: -1,
                                 nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
                                 nodeLinks: [...this.state.nodeLinks,
                                     [droppOnWindowNodeId, droppedOnWindowNodeOutputIdx, newNodeId, 0]]
@@ -742,6 +744,59 @@ class AlWindowEditor extends React.Component {
         if (e.target.value != null) {
             this.setState({ componentSearchText: e.target.value });
         }
+    };
+
+    getSuggestionTargetBoxJsx = (targetBoxWidthPixel,
+                                     targetBoxMarginPixel, /* left right margin */
+                                     targetBoxDistanceToParentWindowVertical,
+                                     selectedTargetDropBoxId, /* == this.state.targetDropBoxId */
+                                     parentOffsetX, parentOffsetY,
+                                     parentWidth, parentHeight,
+                                     parentNumOutputs,
+                                     parentNodeId, parentOutIdx) => {
+        if (parentNumOutputs < 1) {
+            return null;
+        }
+        let eachWW = targetBoxWidthPixel + 2 * targetBoxMarginPixel;
+        let totalWidth = eachWW * parentNumOutputs;
+        let beginLeftOffset = (parentWidth - totalWidth) * 0.5;
+        let myXOffset = beginLeftOffset + parentOutIdx * eachWW;
+        myXOffset += parentOffsetX;
+        let myYOffset = parentHeight + targetBoxDistanceToParentWindowVertical;
+        myYOffset += parentOffsetY;
+        let myTargetBoxId = parentNodeId * 1000 + parentOutIdx;
+        let additionalClassName = myTargetBoxId == selectedTargetDropBoxId ? 'dragover': '';
+        return (
+            <div
+                key={`recommend_target_box_${parentNodeId}_${parentOutIdx}`}
+                className={`targetbox ${additionalClassName}`}
+
+                data-for-node-id={parentNodeId}
+                data-out-idx={parentOutIdx}
+                data-target-box-id={myTargetBoxId}
+
+                style={{ left: myXOffset + 'px',
+                    top:  myYOffset + 'px',
+                    width: targetBoxWidthPixel + 'px',
+                    maxWidth: targetBoxWidthPixel + 'px',
+                    margin: '0 ' + targetBoxMarginPixel + 'px',
+                }}
+                onDragEnter={(dragEv) => {
+                    this.setState({ targetDropBoxId : myTargetBoxId })
+                }}
+                onDragExit={(dragEv) => {
+                    this.setState({ targetDropBoxId : -1 })
+                }}
+                onDragLeave={(dragEv) => {
+                    this.setState({ targetDropBoxId : -1 })
+                }}
+                onDragEnd={(dragEv) => {
+                    this.setState({ targetDropBoxId : -1 })
+                }}
+            >
+                Drop something here
+            </div>
+        );
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -901,68 +956,6 @@ class AlWindowEditor extends React.Component {
             }
         }
 
-        {/* ************************************************************** */}
-        {/* ************************************************************** */}
-        {/* ************************************************************** */}
-        let getSuggestionTargetBoxJsx = (targetBoxWidthPixel,
-                                         targetBoxMarginPixel, /* left right margin */
-                                         targetBoxDistanceToParentWindowVertical,
-                                         selectedTargetDropBoxId, /* == this.state.targetDropBoxId */
-                                         parentOffsetX, parentOffsetY,
-                                         parentWidth, parentHeight,
-                                         parentNumOutputs,
-                                         parentNodeId, parentOutIdx) => {
-            if (parentNumOutputs < 1) {
-                return null;
-            }
-            let eachWW = targetBoxWidthPixel + 2 * targetBoxMarginPixel;
-            let totalWidth = eachWW * parentNumOutputs;
-            let beginLeftOffset = (parentWidth - totalWidth) * 0.5;
-            let myXOffset = beginLeftOffset + parentOutIdx * eachWW;
-            myXOffset += parentOffsetX;
-            let myYOffset = parentHeight + targetBoxDistanceToParentWindowVertical;
-            myYOffset += parentOffsetY;
-            let myTargetBoxId = parentNodeId * 1000 + parentOutIdx;
-            let additionalClassName = myTargetBoxId == selectedTargetDropBoxId ? 'dragover': '';
-            return (
-                <div
-                    key={`recommend_target_box_${parentNodeId}_${parentOutIdx}`}
-                    className={`targetbox ${additionalClassName}`}
-
-                    data-for-node-id={parentNodeId}
-                    data-out-idx={parentOutIdx}
-                    data-target-box-id={myTargetBoxId}
-
-                    style={{ left: myXOffset + 'px',
-                             top:  myYOffset + 'px',
-                             width: targetBoxWidthPixel + 'px',
-                             maxWidth: targetBoxWidthPixel + 'px',
-                             margin: '0 ' + targetBoxMarginPixel + 'px',
-                    }}
-                    onDragEnter={(dragEv) => {
-                        this.setState({ targetDropBoxId : myTargetBoxId })
-                    }}
-                    onDragExit={(dragEv) => {
-                        this.setState({ targetDropBoxId : -1 })
-                    }}
-                    onDragLeave={(dragEv) => {
-                        this.setState({ targetDropBoxId : -1 })
-                    }}
-                    onDragEnd={(dragEv) => {
-                        this.setState({ targetDropBoxId : -1 })
-                    }}
-                    onDrop={(dropEv) => {
-                        console.log('onDrop', dropEv);
-                        this.setState({ targetDropBoxId : -1 })
-                    }}
-                >
-                    Drop something here
-                </div>
-            );
-        };
-        {/* ************************************************************** */}
-        {/* ************************************************************** */}
-        {/* ************************************************************** */}
         ///////////////////////////////////
         ///////////////////////////////////
         // is this node 's output connections connected to other nodes?
@@ -980,10 +973,10 @@ console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', nu
         for (let j = 0; j < numOutputs; ++j) {
             let connected = j in outConnectedMap;
             if (!connected) {
-                let recommendTargetBoxJsx = getSuggestionTargetBoxJsx(
+                let recommendTargetBoxJsx = this.getSuggestionTargetBoxJsx(
                     200,
                     10,
-                    50,
+                    30,
                     this.state.targetDropBoxId,
                     displayOffsetX, displayOffsetY,
                     displayContentWrapperWidth, displayContentWrapperHeight,

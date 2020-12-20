@@ -766,36 +766,64 @@ class AlWindowEditor extends React.Component {
         myYOffset += parentOffsetY;
         let myTargetBoxId = parentNodeId * 1000 + parentOutIdx;
         let additionalClassName = myTargetBoxId == selectedTargetDropBoxId ? 'dragover': '';
+
+        // XXX outputNodePixelSize
+        let outputNodePixelSize = 27 + 8 * 2;
+        let [svgX0, svgY0] = this.getXYCoordinatesForInputOutputNode(
+            false,
+            parentWidth, parentHeight,
+            parentOutIdx,
+            parentNumOutputs,
+            outputNodePixelSize
+        );
+        svgX0 += parentOffsetX;
+        svgY0 += parentOffsetY;
+        let [svgX1, svgY1] = this.getXYCoordinatesForInputOutputNode(
+            true,
+            eachWW, 1,
+            0,
+            1,
+            1
+        );
+        svgX1 += myXOffset;
+        svgY1 += myYOffset;
         return (
-            <div
-                key={`recommend_target_box_${parentNodeId}_${parentOutIdx}`}
-                className={`targetbox ${additionalClassName}`}
+            <React.Fragment>
+                <div
+                    key={`recommend_target_box_${parentNodeId}_${parentOutIdx}`}
+                    className={`targetbox ${additionalClassName}`}
 
-                data-for-node-id={parentNodeId}
-                data-out-idx={parentOutIdx}
-                data-target-box-id={myTargetBoxId}
+                    data-for-node-id={parentNodeId}
+                    data-out-idx={parentOutIdx}
+                    data-target-box-id={myTargetBoxId}
 
-                style={{ left: myXOffset + 'px',
-                    top:  myYOffset + 'px',
-                    width: targetBoxWidthPixel + 'px',
-                    maxWidth: targetBoxWidthPixel + 'px',
-                    margin: '0 ' + targetBoxMarginPixel + 'px',
-                }}
-                onDragEnter={(dragEv) => {
-                    this.setState({ targetDropBoxId : myTargetBoxId })
-                }}
-                onDragExit={(dragEv) => {
-                    this.setState({ targetDropBoxId : -1 })
-                }}
-                onDragLeave={(dragEv) => {
-                    this.setState({ targetDropBoxId : -1 })
-                }}
-                onDragEnd={(dragEv) => {
-                    this.setState({ targetDropBoxId : -1 })
-                }}
-            >
-                Drop something here
-            </div>
+                    style={{ left: myXOffset + 'px',
+                        top:  myYOffset + 'px',
+                        width: targetBoxWidthPixel + 'px',
+                        maxWidth: targetBoxWidthPixel + 'px',
+                        margin: '0 ' + targetBoxMarginPixel + 'px',
+                    }}
+                    onDragEnter={(dragEv) => {
+                        this.setState({ targetDropBoxId : myTargetBoxId })
+                    }}
+                    onDragExit={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                    onDragLeave={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                    onDragEnd={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                >
+                    Drop something here
+                </div>
+                {
+                    this.getSvgPointAB(svgX0, svgY0, svgX1, svgY1,
+                    `recommendoutlink_${parentNodeId}_${parentOutIdx}`,
+                    null, 'silverPath svg_stroke_dash_array')
+                }
+            </React.Fragment>
         );
     };
 
@@ -968,15 +996,14 @@ class AlWindowEditor extends React.Component {
             return elm[1];
         });
         // outConnections : array of output index that are connected to some other node
-console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', numOutputs);
         let recommendTargetBoxJsxList = [];
         for (let j = 0; j < numOutputs; ++j) {
             let connected = j in outConnectedMap;
             if (!connected) {
                 let recommendTargetBoxJsx = this.getSuggestionTargetBoxJsx(
-                    200,
-                    10,
-                    30,
+                    220,
+                    40,
+                    40,
                     this.state.targetDropBoxId,
                     displayOffsetX, displayOffsetY,
                     displayContentWrapperWidth, displayContentWrapperHeight,
@@ -989,11 +1016,7 @@ console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', nu
             }
         }
 
-
         {/* ************************************************************** */}
-        {/* ************************************************************** */}
-        {/* ************************************************************** */}
-
 
         let cursorMoveCss = contentIsSelected === true ? 'cursormove' : '';
         let styleObj = { left: displayOffsetX + 'px', top: displayOffsetY + 'px' };
@@ -1002,6 +1025,9 @@ console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', nu
         }
         return (
             <React.Fragment>
+                {/************notification box below the component when there's some missing outgoing links ********/}
+                {recommendTargetBoxJsxList}
+                {/************notification box below the component when there's some missing outgoing links ********/}
                 <div
                     className={`alweNodeWrapper ${editorSelectedCssClassName}`}
                     key={'alweNodeWrapper_' + nodeId}
@@ -1021,9 +1047,6 @@ console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', nu
                     </div>
                     <div className={'alweOutputs'}>{outputElements}</div>
                 </div>
-                {/************notification box below the component when there's some missing outgoing links ********/}
-                {recommendTargetBoxJsxList}
-                {/************notification box below the component when there's some missing outgoing links ********/}
             </React.Fragment>
         );
     };

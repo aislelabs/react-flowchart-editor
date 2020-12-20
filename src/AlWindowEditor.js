@@ -24,6 +24,12 @@ class AlWindowEditor extends React.Component {
             canvasMoveSelected: -1,
             editorSelectedNodeId: -1,
 
+            // which "drop something here" target box is hovered over?
+            // for now, the target box id is 1000 * parent node Id + out node index
+            // assumes no node will have over 1000 output nodes
+            targetDropBoxId: -1,
+
+
             canvasOffsetX: 0,
             canvasOffsetY: 0,
             canvasScale: 1.0,
@@ -159,6 +165,69 @@ class AlWindowEditor extends React.Component {
             me.setNewDataForNodeIdToState(captureNodeId, newData);
         };
     };
+
+    // returns a method of 2 parameter that allows the component edit window
+    // to change the component type
+    getChangeNodeTypeFcn = (nodeId) => {
+        let nodeIdToDescriptor = this.getNodeIdToNodeDescriptor();
+        let nodeInfo = nodeIdToDescriptor[nodeId];
+        if (!nodeInfo) {
+            return () => {};
+        }
+        let componentRegistry = this.props.componentRegistry;
+        return (newNodeType /*string*/, newData /*optional map {}*/) => {
+            if (newNodeType == nodeInfo.nodeType) {
+                return;
+            }
+            let compDesc = this.getComponentDescriptor(newNodeType);
+            if (!compDesc) {
+                throw 'componentTypeName ' + newNodeType + ' is invalid (component not registered or typo)';
+                /*compDesc = {
+                    defaultDataFcn: () => {},
+                    numInputs: 1,
+                    numOutputs: 1,
+                    yesNoOutput: false,
+                };*/
+            }
+            let numInputs = compDesc.numInputs;
+            let numOutputs = compDesc.numOutputs;
+            let newNodeDescriptor = [...this.state.nodeDescriptors] || [];
+            let i = 0;
+            // change the node type
+            for (i = 0; i < newNodeDescriptor.length; ++i) {
+                if (newNodeDescriptor[i].nodeId == nodeId) {
+                    newNodeDescriptor[i].nodeType = newNodeType;
+                    newNodeDescriptor[i].data = newData || compDesc.defaultDataFcn();
+                    newNodeDescriptor[i].numInputs = numInputs;
+                    newNodeDescriptor[i].numOutputs = numOutputs;
+                    newNodeDescriptor[i].yesNoOutput= compDesc.yesNoOutput;
+                    break;
+                }
+            }
+            // remove links that are nolonger valid : too many relative to the new
+            //  number of in/outputs
+            let tempNodeLinks = [...this.state.nodeLinks] || [];
+            let newNodeLinks = [];
+            for (i = 0; i < tempNodeLinks.length; ++i) {
+                let [outNodeId, outNodeIdx, inNodeId, inNodeIdx] = tempNodeLinks[i];
+                let toDelete = false;
+                if (outNodeId == nodeId && outNodeIdx > (numOutputs - 1)) {
+                    toDelete = true;
+                }
+                if (inNodeId == nodeId && inNodeIdx > (numInputs - 1)) {
+                    toDelete = true;
+                }
+                if ( ! toDelete) {
+                    newNodeLinks.push([outNodeId, outNodeIdx, inNodeId, inNodeIdx]);
+                }
+            }
+            this.setState({
+                nodeDescriptors: newNodeDescriptor,
+                nodeLinks: newNodeLinks,
+            });
+        }; // END OF return (...)
+    }
+
     getNodeIdToNodeDescriptor = () => {
         let nodeDescriptors = this.state.nodeDescriptors;
         if (nodeDescriptors == null || nodeDescriptors.length == 0) {
@@ -229,7 +298,7 @@ class AlWindowEditor extends React.Component {
                     contentSelectedNodeId: parseInt(mouseDownContentNodeId),
                     mouseDownOffsetX: offsetX,
                     mouseDownOffsetY: offsetY,
-                    
+
                     mouseDownMillis: epoch,
                 });
             }
@@ -361,12 +430,12 @@ class AlWindowEditor extends React.Component {
                     let newWidth =
                         parseInt(
                             (currentX - descriptor.display.offsetX) /
-                                this.getPointerDiscretization()
+                            this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     let newHeight =
                         parseInt(
                             (currentY - descriptor.display.offsetY) /
-                                this.getPointerDiscretization()
+                            this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     descriptor.display.width = Math.max(32, newWidth);
                     descriptor.display.height = Math.max(32, newHeight);
@@ -439,7 +508,7 @@ class AlWindowEditor extends React.Component {
             let doubleClickedNodeId = closestNodeWrapper.dataset.nodeId;
 
             if (doubleClickedNodeId != null && doubleClickedNodeId > -1 &&
-                ((epochNow - this.state.mouseDownMillis) < 100)) {
+                ((epochNow - this.state.mouseDownMillis) < 130)) {
                 this.setState({
                     editorAreaOpen: true,
                     editorSelectedNodeId: doubleClickedNodeId,
@@ -453,7 +522,21 @@ class AlWindowEditor extends React.Component {
             return;
         }
         let dom = e.target;
-        if (dom.classList.contains('topCanvas')) {
+        let isDropOnCanvas = dom.classList.contains('topCanvas');
+        let isTargetBoxDropped = dom.classList.contains('targetbox');
+        if (isDropOnCanvas || isTargetBoxDropped) {
+            // droppOnWindowNodeId : used for when the node
+            //     was dropped on 'Drop something here'
+            let droppOnWindowNodeId = null;
+            let droppedOnWindowNodeOutputIdx = null;
+
+            if (isTargetBoxDropped) {
+                droppOnWindowNodeId = dom.dataset.forNodeId;
+                droppOnWindowNodeId = parseInt(droppOnWindowNodeId, 10);
+                droppedOnWindowNodeOutputIdx = dom.dataset.outIdx;
+                droppedOnWindowNodeOutputIdx = parseInt(droppedOnWindowNodeOutputIdx, 10);
+                dom = dom.closest('.topCanvas');
+            }
             let ptrX = e.clientX - dom.getBoundingClientRect().left;
             ptrX /= this.state.canvasScale;
             let ptrY = e.clientY - dom.getBoundingClientRect().top;
@@ -483,9 +566,10 @@ class AlWindowEditor extends React.Component {
                         nodeUuid = this.props.uuidGenFcn();
                         calledSuppliedUuidFcn = true;
                     }
+                    let newNodeId = maxNodeId + 1;
                     let addNodeDescriptorFcn = (uuidVal) => {
                         let newNodeDescriptor = {
-                            nodeId: maxNodeId + 1,
+                            nodeId: newNodeId,
                             nodeUuid: uuidVal,
                             nodeType: componentType,
                             data: componentDescriptor.defaultDataFcn(),
@@ -499,9 +583,20 @@ class AlWindowEditor extends React.Component {
                                 height: componentDescriptor.initialHeightPx,
                             },
                         };
-                        this.setState({
-                            nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
-                        });
+                        if (droppOnWindowNodeId == null ||
+                            droppedOnWindowNodeOutputIdx == null ||
+                            componentDescriptor.numInputs == 0) {
+                            this.setState({
+                                nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
+                            });
+                        } else {
+                            this.setState({
+                                nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
+                                nodeLinks: [...this.state.nodeLinks,
+                                    [droppOnWindowNodeId, droppedOnWindowNodeOutputIdx, newNodeId, 0]]
+                            });
+                        }
+
                     };
 
                     if (calledSuppliedUuidFcn) {
@@ -697,7 +792,7 @@ class AlWindowEditor extends React.Component {
                 inputActive[linkage[3]] = 1;
             }
         }
-        
+
 
         let inputElements = [];
         for (i = 0; i < numInputs; ++i) {
@@ -707,23 +802,23 @@ class AlWindowEditor extends React.Component {
                 activeStr = 'active';
             }
 
-        let downArrowSvgPath = (<path 
-                    className="alweInput"
-                    key={'alweInput_' + i}
-                    data-idx={'input_' + i}
-           fill="white" 
-           d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
+            let downArrowSvgPath = (<path
+                className="alweInput"
+                key={'alweInput_' + i}
+                data-idx={'input_' + i}
+                fill="white"
+                d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
             let downArrowSvg = (
-                <svg  
+                <svg
                     className={`alweInput ${activeStr}`}
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                 >
-                {downArrowSvgPath}
+                    {downArrowSvgPath}
                 </svg>
-        );
+            );
             inputElements.push(
                 downArrowSvg
             );
@@ -738,20 +833,20 @@ class AlWindowEditor extends React.Component {
                 let additionalClass = i == 0 ? 'yes' : 'no';
                 let yesPath = (
                     <path  fill="white"
-                // also add className, key, data-idx to the actual path element. Because on click or on mouse up
-                // if the pointer lands on the path element rather than the svg background, we want the link
-                // to also connect, and not disappear mysteriously
-                        className="alweOutput"
-                        key={'alweOutput_' + i}
-                        data-idx={'output_' + i}
-                        d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                        // also add className, key, data-idx to the actual path element. Because on click or on mouse up
+                        // if the pointer lands on the path element rather than the svg background, we want the link
+                        // to also connect, and not disappear mysteriously
+                           className="alweOutput"
+                           key={'alweOutput_' + i}
+                           data-idx={'output_' + i}
+                           d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                 );
                 let noPath = (
                     <path fill="white"
-                        className="alweOutput"
-                        key={'alweOutput_' + i}
-                        data-idx={'output_' + i}
-                        d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                          className="alweOutput"
+                          key={'alweOutput_' + i}
+                          data-idx={'output_' + i}
+                          d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
                     />
                 );
                 outputElements.push(
@@ -765,23 +860,23 @@ class AlWindowEditor extends React.Component {
                     </svg>
                 );
             } else {
-                let downArrowSvgPath = (<path 
+                let downArrowSvgPath = (<path
                     className="alweOutput"
                     key={'alweOutput_' + i}
                     data-idx={'output_' + i}
-                   fill="white" 
-                   d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
+                    fill="white"
+                    d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />);
                 let downArrowSvg = (
-                <svg  
+                    <svg
                         className={`alweOutput ${activeStr}`}
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                {downArrowSvgPath}
-                </svg>);
-                
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        {downArrowSvgPath}
+                    </svg>);
+
                 outputElements.push(
                     downArrowSvg
                 );
@@ -805,10 +900,107 @@ class AlWindowEditor extends React.Component {
                 );
             }
         }
+
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
+        let getSuggestionTargetBoxJsx = (targetBoxWidthPixel,
+                                         targetBoxMarginPixel, /* left right margin */
+                                         targetBoxDistanceToParentWindowVertical,
+                                         selectedTargetDropBoxId, /* == this.state.targetDropBoxId */
+                                         parentOffsetX, parentOffsetY,
+                                         parentWidth, parentHeight,
+                                         parentNumOutputs,
+                                         parentNodeId, parentOutIdx) => {
+            if (parentNumOutputs < 1) {
+                return null;
+            }
+            let eachWW = targetBoxWidthPixel + 2 * targetBoxMarginPixel;
+            let totalWidth = eachWW * parentNumOutputs;
+            let beginLeftOffset = (parentWidth - totalWidth) * 0.5;
+            let myXOffset = beginLeftOffset + parentOutIdx * eachWW;
+            myXOffset += parentOffsetX;
+            let myYOffset = parentHeight + targetBoxDistanceToParentWindowVertical;
+            myYOffset += parentOffsetY;
+            let myTargetBoxId = parentNodeId * 1000 + parentOutIdx;
+            let additionalClassName = myTargetBoxId == selectedTargetDropBoxId ? 'dragover': '';
+            return (
+                <div
+                    key={`recommend_target_box_${parentNodeId}_${parentOutIdx}`}
+                    className={`targetbox ${additionalClassName}`}
+
+                    data-for-node-id={parentNodeId}
+                    data-out-idx={parentOutIdx}
+                    data-target-box-id={myTargetBoxId}
+
+                    style={{ left: myXOffset + 'px',
+                             top:  myYOffset + 'px',
+                             width: targetBoxWidthPixel + 'px',
+                             maxWidth: targetBoxWidthPixel + 'px',
+                             margin: '0 ' + targetBoxMarginPixel + 'px',
+                    }}
+                    onDragEnter={(dragEv) => {
+                        this.setState({ targetDropBoxId : myTargetBoxId })
+                    }}
+                    onDragExit={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                    onDragLeave={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                    onDragEnd={(dragEv) => {
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                    onDrop={(dropEv) => {
+                        console.log('onDrop', dropEv);
+                        this.setState({ targetDropBoxId : -1 })
+                    }}
+                >
+                    Drop something here
+                </div>
+            );
+        };
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
         ///////////////////////////////////
         ///////////////////////////////////
-        ///////////////////////////////////
-        ///////////////////////////////////
+        // is this node 's output connections connected to other nodes?
+        let outConnectedMap = {};
+        let outConnections = (this.state.nodeLinks || []).filter((elm) => {
+            // [outNodeId, outidx, inNodeId, inIdx]
+            return elm[0] == nodeId;
+        }).map((elm) => {
+            outConnectedMap[elm[1]] = true;
+            return elm[1];
+        });
+        // outConnections : array of output index that are connected to some other node
+console.log('nodeId', nodeId, 'outConnections', outConnections, 'numOutputs', numOutputs);
+        let recommendTargetBoxJsxList = [];
+        for (let j = 0; j < numOutputs; ++j) {
+            let connected = j in outConnectedMap;
+            if (!connected) {
+                let recommendTargetBoxJsx = getSuggestionTargetBoxJsx(
+                    200,
+                    10,
+                    50,
+                    this.state.targetDropBoxId,
+                    displayOffsetX, displayOffsetY,
+                    displayContentWrapperWidth, displayContentWrapperHeight,
+                    numOutputs,
+                    nodeId, j
+                );
+                if (recommendTargetBoxJsx != null) {
+                    recommendTargetBoxJsxList.push(recommendTargetBoxJsx);
+                }
+            }
+        }
+
+
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
+        {/* ************************************************************** */}
+
 
         let cursorMoveCss = contentIsSelected === true ? 'cursormove' : '';
         let styleObj = { left: displayOffsetX + 'px', top: displayOffsetY + 'px' };
@@ -816,88 +1008,47 @@ class AlWindowEditor extends React.Component {
             styleObj = { ...styleObj, border: '4px solid ' + adhocNodeidBorderColour };
         }
         return (
-            <div
-                className={`alweNodeWrapper ${editorSelectedCssClassName}`}
-                key={'alweNodeWrapper_' + nodeId}
-                data-node-id={nodeId + ''}
-                style={styleObj}>
-                <div className={'alweInputs'}>{inputElements}</div>
+            <React.Fragment>
                 <div
-                    className={`nodecontent ${cursorMoveCss}`}
-                    style={{
-                        width: displayContentWrapperWidth + 'px',
-                        height: displayContentWrapperHeight + 'px',
-                        maxWidth: displayContentWrapperWidth + 'px',
-                        maxHeight: displayContentWrapperHeight + 'px',
-                    }}>
-                    {contentJsx}
-                    <div className={'alweResizeBox'} />
+                    className={`alweNodeWrapper ${editorSelectedCssClassName}`}
+                    key={'alweNodeWrapper_' + nodeId}
+                    data-node-id={nodeId + ''}
+                    style={styleObj}>
+                    <div className={'alweInputs'}>{inputElements}</div>
+                    <div
+                        className={`nodecontent ${cursorMoveCss}`}
+                        style={{
+                            width: displayContentWrapperWidth + 'px',
+                            height: displayContentWrapperHeight + 'px',
+                            maxWidth: displayContentWrapperWidth + 'px',
+                            maxHeight: displayContentWrapperHeight + 'px',
+                        }}>
+                        {contentJsx}
+                        <div className={'alweResizeBox'} />
+                    </div>
+                    <div className={'alweOutputs'}>{outputElements}</div>
                 </div>
-                <div className={'alweOutputs'}>{outputElements}</div>
-            </div>
+                {/************notification box below the component when there's some missing outgoing links ********/}
+                {recommendTargetBoxJsxList}
+                {/************notification box below the component when there's some missing outgoing links ********/}
+            </React.Fragment>
         );
     };
-    
-    // returns a method of 2 parameter that allows the component edit window 
-    // to change the component type
-    getChangeNodeTypeFcn = (nodeId) => {
-        let nodeIdToDescriptor = this.getNodeIdToNodeDescriptor();
-        let nodeInfo = nodeIdToDescriptor[nodeId];
-        if (!nodeInfo) {
-            return () => {};
+
+    // returns [x, y] relative to the window's top left corner (0,0)
+    getXYCoordinatesForInputOutputNode = (isForInputNode,
+                                          windowWidth,
+                                          windowHeight,
+                                          inoutIdx,
+                                          numInOut,
+                                          nodePixelSizeWidth) => {
+        let x = (windowWidth - numInOut * nodePixelSizeWidth) * 0.5 +
+            nodePixelSizeWidth * (inoutIdx + 1 - 0.5);
+        let y = windowHeight;
+        if (isForInputNode) {
+            y = 0;
         }
-        let componentRegistry = this.props.componentRegistry;
-        return (newNodeType /*string*/, newData /*optional map {}*/) => {
-            if (newNodeType == nodeInfo.nodeType) {
-                return;
-            }
-            let compDesc = this.getComponentDescriptor(newNodeType);
-            if (!compDesc) {
-                throw 'componentTypeName ' + newNodeType + ' is invalid (component not registered or typo)';
-                /*compDesc = {
-                    defaultDataFcn: () => {},
-                    numInputs: 1,
-                    numOutputs: 1,
-                    yesNoOutput: false,
-                };*/
-            }
-            let numInputs = compDesc.numInputs;
-            let numOutputs = compDesc.numOutputs;
-            let newNodeDescriptor = [...this.state.nodeDescriptors] || [];
-            let i = 0;
-            // change the node type
-            for (i = 0; i < newNodeDescriptor.length; ++i) {
-                if (newNodeDescriptor[i].nodeId == nodeId) {
-                    newNodeDescriptor[i].nodeType = newNodeType;
-                    newNodeDescriptor[i].data = newData || compDesc.defaultDataFcn();
-                    newNodeDescriptor[i].numInputs = numInputs;
-                    newNodeDescriptor[i].numOutputs = numOutputs;
-                    newNodeDescriptor[i].yesNoOutput= compDesc.yesNoOutput;
-                    break;
-                }
-            }
-            // remove links that are nolonger valid : too many relative to the new
-            //  number of in/outputs
-            let tempNodeLinks = [...this.state.nodeLinks] || [];
-            let newNodeLinks = [];
-            for (i = 0; i < tempNodeLinks.length; ++i) {
-                let [outNodeId, outNodeIdx, inNodeId, inNodeIdx] = tempNodeLinks[i];
-                let toDelete = false;
-                if (outNodeId == nodeId && outNodeIdx > (numOutputs - 1)) {
-                    toDelete = true;
-                }
-                if (inNodeId == nodeId && inNodeIdx > (numInputs - 1)) {
-                    toDelete = true;
-                }
-                if ( ! toDelete) {
-                    newNodeLinks.push([outNodeId, outNodeIdx, inNodeId, inNodeIdx]);
-                }
-            }
-            this.setState({
-                nodeDescriptors: newNodeDescriptor,
-                nodeLinks: newNodeLinks,
-            });
-        }; // END OF return (...)
+        return [x, y];
     }
 
     getOutputInputLinkSVGs = () => {
@@ -925,20 +1076,32 @@ class AlWindowEditor extends React.Component {
             let numInStubs = nodeIdToDescriptor[inNodeId].numInputs;
             // whether or not the output node is a yes/no output output
             let isYesNoOutput = nodeIdToDescriptor[outNodeId].yesNoOutput || false;
-            
-            // this is in the AlWindowEditor.css
+            ////////////////////////////////
             let inputNodePixelSize = 14 + 4 * 2;
             let outputNodePixelSize = 27 + 8 * 2;
-            let x0 = outNodeDisplay.offsetX + 
-                          (outNodeDisplay.width - numOutStubs * outputNodePixelSize) * 0.5 +
-                          (outputNodePixelSize) * ((outNodeIdx + 1) - 0.5);
-            let y0 = outNodeDisplay.offsetY + outNodeDisplay.height ;
-            let x1 = inNodeDisplay.offsetX + 
-                          /* adds 1/2 of the whitespace left in the width dimension */
-                         (inNodeDisplay.width - numInStubs * inputNodePixelSize) * 0.5 +
-                         /* for the first input node, add 1/2 the input node width. 2nd input node, add 1.5 input node width */
-                         (inputNodePixelSize) * ((inNodeIdx + 1) - 0.5);
-            let y1 = inNodeDisplay.offsetY;
+            let [x0, y0] = this.getXYCoordinatesForInputOutputNode(
+                false,
+                outNodeDisplay.width,
+                outNodeDisplay.height,
+                outNodeIdx,
+                numOutStubs,
+                outputNodePixelSize
+            );
+            x0 += outNodeDisplay.offsetX;
+            y0 += outNodeDisplay.offsetY;
+            let [x1, y1] = this.getXYCoordinatesForInputOutputNode(
+                true,
+                inNodeDisplay.width,
+                inNodeDisplay.height,
+                inNodeIdx,
+                numInStubs,
+                inputNodePixelSize
+            );
+            x1 += inNodeDisplay.offsetX;
+            y1 += inNodeDisplay.offsetY;
+            ////////////////////////////////
+
+
             let additionalLinkClassName = '';
             if (isYesNoOutput === true) {
                 if (outNodeIdx == 0) {
@@ -949,11 +1112,11 @@ class AlWindowEditor extends React.Component {
                 }
             }
 
-            
+
             let curveClickDeleteHandler = (e) => {
                 this.removeOutputInputLinkToState([outNodeId, outNodeIdx, inNodeId, inNodeIdx]);
             };
-            
+
             let domSvg = this.getSvgPointAB(
                 x0,
                 y0,
@@ -977,7 +1140,7 @@ class AlWindowEditor extends React.Component {
         curveClickHandler /*optional*/,
         additionalClassNames /*optional string*/,
     ) => {
-        
+
         let curvature = 0.5;
         /*
         let p = Math.abs(x1 - x0) * curvature;
@@ -985,7 +1148,7 @@ class AlWindowEditor extends React.Component {
         let hx2 = x1 - p;
         let pathd = `M ${x0} ${y0} C ${hx1} ${y0} ${hx2} ${y1} ${x1} ${y1}`;
         */
-        
+
         let isLeftRight = x0 < x1;
         let isTopDown = y0 < y1;
         let width = Math.abs(x0 - x1);
@@ -1016,8 +1179,8 @@ class AlWindowEditor extends React.Component {
                 xmlns="http://www.w3.org/2000/svg"
                 key={svgReactElementKey}
                 onClick={curveClickHandler}>
-                <path xmlns="http://www.w3.org/2000/svg" className={`bluePath ${additionalClassNames}`} 
-                    d={pathd} />
+                <path xmlns="http://www.w3.org/2000/svg" className={`bluePath ${additionalClassNames}`}
+                      d={pathd} />
             </svg>
         );
     };
@@ -1108,7 +1271,6 @@ class AlWindowEditor extends React.Component {
                     registry.componentSearchText.indexOf(componentSearchText) >= 0 ||
                     registry.componentTypeName.indexOf(componentSearchText) >= 0
                 ) {
-                    // filter by component search text if necessary
                     componentNameConsidered[registry.componentTypeName] = 1;
                     let ComponentSelectReactClass = registry.componentSelect;
                     let componentInnerJsx = null;
@@ -1249,11 +1411,11 @@ class AlWindowEditor extends React.Component {
 AlWindowEditor.propTypes = {
     // viewOnly : if true, disables all editing functionalities
     viewOnly: PropTypes.bool,
-    
+
     // componentAreaOpen the default state (boolean) of the component window; Whether or not the component
     // selector window will open by default.
-    componentAreaOpen: PropTypes.bool, 
-    
+    componentAreaOpen: PropTypes.bool,
+
     // pointerDiscretization : if specified, must be an integer >= 1. This is used to discretize the coordinates
     //      on the main window (so window resize, window move moves in a square grid of this specific size)
     pointerDiscretization: PropTypes.number,
@@ -1292,7 +1454,7 @@ AlWindowEditor.propTypes = {
                                                 "height": 103
                                                 }
       componentEdit : React component that is displayed to edit the component attributes
-                        Props : 
+                        Props :
                                 "data" : the up to date data for the component
                                 "updater": function of 1 parameter (the data) to update data
                                 "changeType": a function of 2 parameters : (newComponentTypeName (string), newData (optional map {}))

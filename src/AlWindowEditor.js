@@ -289,10 +289,6 @@ class AlWindowEditor extends React.Component {
             }
             let closestNodeWrapper = dom.closest('.alweNodeWrapper');
             if (closestNodeWrapper != null) {
-                let offsetX =
-                    e.clientX - closestNodeWrapper.getBoundingClientRect().left;
-                let offsetY =
-                    e.clientY - closestNodeWrapper.getBoundingClientRect().top;
                 this.setState({
                     contentSelectedNodeId: -1,
                     outputSelectedNodeId: -1,
@@ -301,8 +297,8 @@ class AlWindowEditor extends React.Component {
                     resizeSelectedNodeId: parseInt(
                         closestNodeWrapper.dataset.nodeId
                     ),
-                    mouseDownX: e.clientX - canvas.getBoundingClientRect().left,
-                    mouseDownY: e.clientY - canvas.getBoundingClientRect().top,
+                    mouseDownX: (e.clientX - canvas.getBoundingClientRect().left) / this.state.canvasScale,
+                    mouseDownY: (e.clientY - canvas.getBoundingClientRect().top) / this.state.canvasScale,
                 });
             }
         } else if (
@@ -350,11 +346,9 @@ class AlWindowEditor extends React.Component {
                     resizeSelectedNodeId: -1,
                     canvasMoveSelected: -1,
                     mouseDownX:
-                        (e.clientX - canvas.getBoundingClientRect().left) /
-                        this.state.canvasScale,
+                        (e.clientX - canvas.getBoundingClientRect().left) / this.state.canvasScale,
                     mouseDownY:
-                        (e.clientY - canvas.getBoundingClientRect().top) /
-                        this.state.canvasScale,
+                        (e.clientY - canvas.getBoundingClientRect().top) / this.state.canvasScale,
                     outputSelectedNodeId: parseInt(
                         closestNodeWrapper.dataset.nodeId
                     ),
@@ -1238,6 +1232,9 @@ class AlWindowEditor extends React.Component {
         return [x, y];
     };
 
+    /*
+    Get all the link's between the window nodes  as list of SVGs
+     */
     getOutputInputLinkSVGs = () => {
         let nodeDescriptors = this.state.nodeDescriptors;
         if (nodeDescriptors == null || nodeDescriptors.length == 0) {
@@ -1422,10 +1419,8 @@ class AlWindowEditor extends React.Component {
             );
         }
 
-        // 3) for all existing links, draw the curves
+        // 3) draw all the links for all existing links between the nodes
         let outputInputLinkageSvgs = this.getOutputInputLinkSVGs();
-
-        let canvasTransform = `translate(${this.state.canvasOffsetX}px, ${this.state.canvasOffsetY}px) scale(${this.state.canvasScale})`;
 
         // 4) render the component selector if it is expanded
         let componentAreaOpenCssClassname =
@@ -1545,6 +1540,8 @@ class AlWindowEditor extends React.Component {
                 }
             }
         }
+
+        let canvasTransform = `translate(${this.state.canvasOffsetX}px, ${this.state.canvasOffsetY}px) scale(${this.state.canvasScale})`;
 
         return (
             <div className={'height100'}>

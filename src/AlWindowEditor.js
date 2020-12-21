@@ -378,8 +378,12 @@ class AlWindowEditor extends React.Component {
                 e.clientX - this.state.mouseDownOffsetX - canvas.getBoundingClientRect().left;
             newWrapperX /= this.state.canvasScale;
             let newWrapperY =
-                e.clientY - this.state.mouseDownOffsetY - canvas.getBoundingClientRect().top;
+                //e.clientY - this.state.mouseDownOffsetY - canvas.getBoundingClientRect().top;
+                e.clientY - canvas.getBoundingClientRect().top;
             newWrapperY /= this.state.canvasScale;
+            // XXX this is to prevent draggable to overlap with window element moving
+            // see around line 1046 onDrag()
+            newWrapperY += 3;
             newWrapperX =
                 parseInt(newWrapperX / this.getPointerDiscretization()) *
                 this.getPointerDiscretization();
@@ -484,6 +488,21 @@ class AlWindowEditor extends React.Component {
             }
         }
 
+        if (this.state.contentSelectedNodeId != null && this.state.contentSelectedNodeId > -1) {
+            // this is the case where we started moving an existing window component
+            // and then landed on a "drop something here"  notification box
+            if (dom.classList.contains('targetbox')) {
+                let dataNodeId = parseInt(dom.dataset.forNodeId);
+                let outPortIdx = parseInt(dom.dataset.outIdx);
+                let selNodeId = this.state.contentSelectedNodeId;
+                let nd = this.getNodeIdToNodeDescriptor()[selNodeId];
+                if (!isNaN(dataNodeId) && !isNaN(outPortIdx) && nd && nd.numInputs > 0) {
+                    let newLink = [dataNodeId, outPortIdx, selNodeId, 0];
+                    this.setState({ nodeLinks: [...this.state.nodeLinks, newLink] });
+                }
+            }
+        }
+
         this.setState({
             canvasMoveSelected: -1,
             resizeSelectedNodeId: -1,
@@ -521,6 +540,7 @@ class AlWindowEditor extends React.Component {
         if (this.props.viewOnly) {
             return;
         }
+console.log('canvasdrop', e, 'data transfer', e.dataTransfer);
         let dom = e.target;
         let isDropOnCanvas = dom.classList.contains('topCanvas');
         let isTargetBoxDropped = dom.classList.contains('targetbox');
@@ -1029,10 +1049,12 @@ class AlWindowEditor extends React.Component {
                 {recommendTargetBoxJsxList}
                 {/************notification box below the component when there's some missing outgoing links ********/}
                 <div
+
                     className={`alweNodeWrapper ${editorSelectedCssClassName}`}
                     key={'alweNodeWrapper_' + nodeId}
                     data-node-id={nodeId + ''}
                     style={styleObj}>
+
                     <div className={'alweInputs'}>{inputElements}</div>
                     <div
                         className={`nodecontent ${cursorMoveCss}`}

@@ -1,5 +1,7 @@
 :root {
   --alWE-font-size: 14px;
+  --alWE-link-width: 3px;
+  --alWE-link-hover-width: 6px;
   --alWE-pane-boxshadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   --alWE-pane-transition-width: width 0.3s cubic-bezier(.25,.8,.25,1);
   --alWE-pane-transition-all: all 0.3s cubic-bezier(.25,.8,.25,1);
@@ -30,16 +32,27 @@
   fill: none;
   /*stroke: #4ea9ff;*/
   stroke: var(--alWE-default-blue);
-  stroke-width: 3px;
+  stroke-width: var(--alWE-link-width);
   transform:translate(-19999px,-19999px);
   cursor:pointer;
 }
+
+.topCanvas path.bluePath:hover {
+	stroke-width: var(--alWE-link-hover-width);
+}
+
 .topCanvas path.bluePath.silverPath {
   stroke: silver;
+}
+.topCanvas path.bluePath.silverPath:hover {
+  stroke-width: var(--alWE-link-width);
 }
 
 .topCanvas path.bluePath.svg_stroke_dash_array {
     stroke-dasharray: 10,10;
+}
+.topCanvas path.bluePath.svg_stroke_dash_array:hover {
+    stroke-width: var(--alWE-link-width);
 }
 
 /* output node from a yes no , yes node */

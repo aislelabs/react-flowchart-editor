@@ -178,7 +178,7 @@ class App extends Component{
                 "componentGroup": "group0",
                 "componentSearchText": "dummy",
                 "defaultDataFcn": function() {return {};},
-                "numInputs": 2,
+                "numInputs": 1,
                 "numOutputs": 3,
                 "initialWidthPx": 300,
                 "initialHeightPx": 120,
@@ -204,7 +204,8 @@ class App extends Component{
                                initialNodeLinks={nodeLinks}
                                componentRegistry={componentRegistry}
                                updateCbkFcn={updateCbkFcn}
-		               nodeidBorderColorMap={nodeidBorderColor}/>
+		               nodeidBorderColorMap={nodeidBorderColor} 
+			       />
 	}
 }
 

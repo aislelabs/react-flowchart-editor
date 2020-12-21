@@ -383,13 +383,18 @@ class AlWindowEditor extends React.Component {
             newWrapperY /= this.state.canvasScale;
             // XXX this is to prevent draggable to overlap with window element moving
             // see around line 1046 onDrag()
-            newWrapperY += 3;
+
             newWrapperX =
                 parseInt(newWrapperX / this.getPointerDiscretization()) *
                 this.getPointerDiscretization();
             newWrapperY =
                 parseInt(newWrapperY / this.getPointerDiscretization()) *
                 this.getPointerDiscretization();
+
+            newWrapperY += Math.max(3, this.getPointerDiscretization());
+
+
+
             this.setState((state) => {
                 let nodeDescriptors = [...state.nodeDescriptors];
                 let nodeDescriptor = nodeDescriptors.filter(
@@ -540,7 +545,6 @@ class AlWindowEditor extends React.Component {
         if (this.props.viewOnly) {
             return;
         }
-console.log('canvasdrop', e, 'data transfer', e.dataTransfer);
         let dom = e.target;
         let isDropOnCanvas = dom.classList.contains('topCanvas');
         let isTargetBoxDropped = dom.classList.contains('targetbox');
@@ -606,11 +610,13 @@ console.log('canvasdrop', e, 'data transfer', e.dataTransfer);
                         if (droppOnWindowNodeId == null ||
                             droppedOnWindowNodeOutputIdx == null ||
                             componentDescriptor.numInputs == 0) {
+                            // dropped onto the canvas
                             this.setState({
                                 targetDropBoxId: -1,
                                 nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
                             });
                         } else {
+                            // dropped onto the notification "drop something here" box
                             this.setState({
                                 targetDropBoxId: -1,
                                 nodeDescriptors: [...this.state.nodeDescriptors, newNodeDescriptor],
@@ -836,7 +842,7 @@ console.log('canvasdrop', e, 'data transfer', e.dataTransfer);
                         this.setState({ targetDropBoxId : -1 })
                     }}
                 >
-                    Drop something here
+                    {this.props.dropNotificationElement}
                 </div>
                 {
                     this.getSvgPointAB(svgX0, svgY0, svgX1, svgY1,
@@ -1021,8 +1027,8 @@ console.log('canvasdrop', e, 'data transfer', e.dataTransfer);
             let connected = j in outConnectedMap;
             if (!connected) {
                 let recommendTargetBoxJsx = this.getSuggestionTargetBoxJsx(
-                    220,
-                    40,
+                    200,
+                    20,
                     40,
                     this.state.targetDropBoxId,
                     displayOffsetX, displayOffsetY,
@@ -1518,6 +1524,17 @@ AlWindowEditor.propTypes = {
     uuid preferbly in v4. The function can return either the UUID string, or a promise.
      If uuidGenFcn is  not supplied, a default implementation is used*/
     uuidGenFcn: PropTypes.func,
+
+    // "Drop something here" notification text (can be jsx) rendered under each of the unconnected output ports
+    dropNotificationElement: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
 };
+
+
+
+AlWindowEditor.defaultProps = {
+    dropNotificationElement: 'Drop something here',
+}
+
+
 
 export default AlWindowEditor;

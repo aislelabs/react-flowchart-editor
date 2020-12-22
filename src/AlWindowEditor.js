@@ -1535,6 +1535,13 @@ class AlWindowEditor extends React.Component {
                             changeType={this.getChangeNodeTypeFcn(
                                 this.state.editorSelectedNodeId
                             )}
+                            closeEditor={() => {
+                                    this.setState(s => {
+                                        s.editorAreaOpen = false;
+                                        s.editorSelectedNodeId = -1;
+                                        return {...s};
+                                    });
+                            }}
                         />
                     );
                 }
@@ -1693,6 +1700,7 @@ AlWindowEditor.propTypes = {
                                 "changeType": a function of 2 parameters : (newComponentTypeName (string), newData (optional map {}))
                                                         that allows the component to be changed to another , registered componentTypeName.
                                                         This method will throw an exception if newComponentTypeName is not a registered component.
+                                "closeEditor": a function () =>{} with no argument. That will close the editor window.
     }
     */
     /*

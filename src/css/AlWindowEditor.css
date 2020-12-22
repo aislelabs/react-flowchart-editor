@@ -222,7 +222,8 @@
 .componentArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100vh - 60px);
+  overflow: scroll;
+  height: calc(100% - 50px);
   z-index: 998;
   position: absolute;
   right: 0px;
@@ -330,7 +331,8 @@
 .editorArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100vh - 60px);
+  overflow: scroll;
+  height: calc(100% - 50px);
   z-index: 999;
   position: absolute;
   background: #fff;

@@ -222,7 +222,6 @@
 .componentArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  overflow: scroll;
   height: calc(100% - 50px);
   z-index: 998;
   position: absolute;
@@ -239,6 +238,7 @@
 }
 .componentArea .componentContent {
   overflow: auto;
+  height: 100%;
 }
 
 

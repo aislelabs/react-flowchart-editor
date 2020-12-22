@@ -238,7 +238,6 @@
   transition: var(--alWE-pane-transition-width);
 }
 .componentArea .componentContent {
-  height: calc(100% - 56px);
   overflow: auto;
 }
 

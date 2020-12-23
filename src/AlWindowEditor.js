@@ -1132,10 +1132,9 @@ class AlWindowEditor extends React.Component {
         }
 
         let bottomToolJsx = null;
-        if (parseInt(nodeId) == parseInt(this.state.editorSelectedNodeId)) {
+        if ((!Boolean(this.props.viewOnly)) && parseInt(nodeId) == parseInt(this.state.editorSelectedNodeId)) {
             bottomToolJsx = (
                 <div className={"bottomTool"}
-
                 >
                     <svg
                         onClick={ this.deleteEditorSelectedNodeToState }

@@ -479,12 +479,12 @@ class AlWindowEditor extends React.Component {
                     let newWidth =
                         parseInt(
                             (currentX - descriptor.display.offsetX) /
-                                this.getPointerDiscretization()
+                            this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     let newHeight =
                         parseInt(
                             (currentY - descriptor.display.offsetY) /
-                                this.getPointerDiscretization()
+                            this.getPointerDiscretization()
                         ) * this.getPointerDiscretization();
                     descriptor.display.width = Math.max(32, newWidth);
                     descriptor.display.height = Math.max(32, newHeight);
@@ -673,7 +673,7 @@ class AlWindowEditor extends React.Component {
                             display: {
                                 offsetX: parseInt(
                                     ptrX -
-                                        componentDescriptor.initialWidthPx * 0.5
+                                    componentDescriptor.initialWidthPx * 0.5
                                 ),
                                 offsetY: ptrY,
                                 width: componentDescriptor.initialWidthPx,
@@ -1131,6 +1131,23 @@ class AlWindowEditor extends React.Component {
             }
         }
 
+        let bottomToolJsx = null;
+        if (parseInt(nodeId) == parseInt(this.state.editorSelectedNodeId)) {
+            bottomToolJsx = (
+                <div className={"bottomTool"}
+
+                >
+                    <svg
+                        onClick={ this.deleteEditorSelectedNodeToState }
+
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path fill="white"
+                              d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z">
+                        </path></svg>
+                </div>
+            );
+        }
+
         ///////////////////////////////////
         ///////////////////////////////////
         // is this node 's output connections connected to other nodes?
@@ -1170,6 +1187,10 @@ class AlWindowEditor extends React.Component {
 
         {
             /* ************************************************************** */
+            /* ************************************************************** */
+            /* ************************************************************** */
+            /* ************************************************************** */
+            /* ************************************************************** */
         }
 
         let cursorMoveCss = contentIsSelected === true ? 'cursormove' : '';
@@ -1187,7 +1208,8 @@ class AlWindowEditor extends React.Component {
             <React.Fragment>
                 {/************notification box below the component when there's some missing outgoing links ********/}
                 {recommendTargetBoxJsxList}
-                {/************notification box below the component when there's some missing outgoing links ********/}
+                {/************END OF notification box below the component when there's some missing outgoing links ********/}
+
                 <div
                     className={`alweNodeWrapper ${editorSelectedCssClassName}`}
                     key={'alweNodeWrapper_' + nodeId}
@@ -1207,7 +1229,10 @@ class AlWindowEditor extends React.Component {
                         {contentJsx}
                         <div className={'alweResizeBox'} />
                     </div>
-                    <div className={'alweOutputs'}>{outputElements}</div>
+                    <div className={'alweOutputs'}>
+                        {outputElements}
+                    </div>
+                    { bottomToolJsx }
                 </div>
             </React.Fragment>
         );
@@ -1467,7 +1492,7 @@ class AlWindowEditor extends React.Component {
                     componentSearchText == null ||
                     componentSearchText.length == 0 ||
                     registry.componentSearchText.indexOf(componentSearchText) >=
-                        0 ||
+                    0 ||
                     registry.componentTypeName.indexOf(componentSearchText) >= 0
                 ) {
                     componentNameConsidered[registry.componentTypeName] = 1;
@@ -1536,11 +1561,11 @@ class AlWindowEditor extends React.Component {
                                 this.state.editorSelectedNodeId
                             )}
                             closeEditor={() => {
-                                    this.setState(s => {
-                                        s.editorAreaOpen = false;
-                                        s.editorSelectedNodeId = -1;
-                                        return {...s};
-                                    });
+                                this.setState(s => {
+                                    s.editorAreaOpen = false;
+                                    s.editorSelectedNodeId = -1;
+                                    return {...s};
+                                });
                             }}
                         />
                     );

@@ -1458,7 +1458,7 @@ class AlWindowEditor extends React.Component {
                 <div key={'componentFilter'} className={`alweComponentFilter`}>
                     <input
                         type={'text'}
-                        placeholder={'Search'}
+                        placeholder={'Search...'}
                         value={this.state.componentSearchText}
                         onChange={this.onComponentSearchTextChange}
                     />

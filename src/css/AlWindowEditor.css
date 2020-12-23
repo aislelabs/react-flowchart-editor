@@ -85,7 +85,7 @@
   border: 4px solid #217CE8;
 }
 .alweNodeWrapper .nodecontent {
-  cursor: grab;
+  cursor: pointer;
 }
 
 .alweNodeWrapper .nodecontent .alweResizeBox {
@@ -127,7 +127,7 @@
 .targetbox:hover,    .targetbox:active,      .targetbox.dragover {
 	border: 3px dashed dodgerblue;
     box-shadow: inset 0px 0px 4px 1px dodgerblue;
-	cursor: copy;
+	cursor: pointer;
 }
 
 
@@ -149,14 +149,13 @@
 
 
 .alweNodeWrapper .alweInputs .alweInput {
-  background: #fff;
   height: 14px;
   width: 14px;
   border : 1px solid var(--alWE-default-blue);
   background: var(--alWE-default-blue);
   position: relative;
   top: -16px;
-  /*padding: 2px 2px;*/
+  padding: 2px 2px;
   margin: 0 3px;
 }
 
@@ -245,7 +244,7 @@
 .componentArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100% - 50px);
+  height: calc(100% - 24px);
   z-index: 998;
   position: absolute;
   right: 0px;
@@ -267,34 +266,47 @@
 
 
 .componentArea .componentContent .alweComponentFilter {
-
+  min-height: 50px;
+  padding: 0px 0px;
+  margin: 0px 0px;
+  position: relative;
 }
 
 .componentArea .componentContent .alweComponentFilter svg {
   /* for the search magnifying glass */
-  position: relative;
-  top: -26px;
-  left: 10px;
+	fill: #c3c3c3;
+	position: absolute;
+	right: 8px;
+	top: 19px;
 }
 
 .componentArea .componentContent .alweComponentFilter input {
-  display: block;
-  width: 100%;
-  background-color: #FFF;
-  border: 1px solid #E8E8EF;
-  box-sizing: border-box;
-  text-indent: 35px;
-  line-height: 35px;
-  font-size: var(--alWE-font-size);
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: #FFF;
+	text-indent: 12px;
+	line-height: 50px;
+	font-size: var(--alWE-font-size);
+	border-bottom: 1px solid #E8E8EF;
+	border-left: none;
+	border-right: none;
+	border-top: 1px solid #E8E8EF;
+}
+
+.componentArea .componentContent .alweComponentFilter ::placeholder {
+	color: #d4d4d4;
 }
 
 .componentArea .componentContent.closed {
   display: none;
 }
-.componentArea .componentContent .componentContentItem, .componentArea .componentContent .topComponentInfoBox {
+.componentArea .componentContent .componentContentItem,     .componentArea .componentContent .topComponentInfoBox {
   width: 100%;
+  min-height: 50px;
+  padding: 0px 0px;
+  margin: 0px 0px;
   user-select: none;
-  padding: 17px 0px;
   cursor: pointer;
   font-size: var(--alWE-font-size);
   box-sizing: border-box;
@@ -354,7 +366,7 @@
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
   overflow: scroll;
-  height: calc(100% - 50px);
+  height: calc(100% - 24px);
   z-index: 999;
   position: absolute;
   background: #fff;

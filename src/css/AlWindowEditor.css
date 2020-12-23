@@ -112,14 +112,14 @@
 /* ******************************************************************* */
 /* ******************************************************************* */
 /* ******************************************************************* */
-.targetbox {
+div.targetbox {
 	border: 3px dashed silver;
 	padding: 12px;
 	border-radius: 2px;
 	position: absolute;
 	background: white;
 	overflow-wrap: break-word;
-	box-sizing: border-box; /* border box sizing is very important !! */
+        box-sizing: border-box; /* border box sizing is very important !! */
 	display: flex;
 	justify-content: center;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './AlWindowEditor.css';
+import './css/AlWindowEditor.css';
 
 let uuidv4 = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
@@ -1132,7 +1132,7 @@ class AlWindowEditor extends React.Component {
         }
 
         let bottomToolJsx = null;
-        if ((!Boolean(this.props.viewOnly)) && parseInt(nodeId) == parseInt(this.state.editorSelectedNodeId)) {
+        /**if ((!Boolean(this.props.viewOnly)) && parseInt(nodeId) == parseInt(this.state.editorSelectedNodeId)) {
             bottomToolJsx = (
                 <div className={"bottomTool"}
                 >
@@ -1145,7 +1145,7 @@ class AlWindowEditor extends React.Component {
                         </path></svg>
                 </div>
             );
-        }
+        }**/
 
         ///////////////////////////////////
         ///////////////////////////////////

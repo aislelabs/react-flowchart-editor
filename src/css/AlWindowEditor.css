@@ -382,6 +382,8 @@ div.targetbox {
 }
 
 .editorArea .editorContent {
+  max-height: calc(100% - 132px);
+  overflow: auto;
 }
 
 .editorArea .editorContent.closed {
@@ -389,6 +391,7 @@ div.targetbox {
 }
 
 .editorArea .editorClose {
+  min-height: 132px;
   width: 100%;
   position: absolute;
   bottom: 0px;

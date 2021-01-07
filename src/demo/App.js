@@ -197,7 +197,8 @@ class App extends Component{
 		// 4: '#e3b3e3',
 		//  5: '#d25f2e',
 	};
-        return <AlWindowEditor viewOnly={false}
+        return <AlWindowEditor 
+	                       viewOnly={false}
 	                       componentAreaOpen={true} 
                                pointerDiscretization={1}
                                initialNodeDescriptors={nodeDescriptors}
@@ -205,6 +206,19 @@ class App extends Component{
                                componentRegistry={componentRegistry}
                                updateCbkFcn={updateCbkFcn}
 		               nodeidBorderColorMap={nodeidBorderColor} 
+			       
+			        
+			       inputNodeSizePx={30}
+			       outputNodeSizePx={8}
+			       inputNodeTopOffset={-32}
+			       outputNodeTopOffset={-4} 
+			       
+			       
+			       targetBoxWidthPx={50}
+			       targetBoxMarginPx={5}
+			       targetBoxDistanceToParentWindowVertical={60}
+			       
+			       componentAreaHideStyle={'vertical'}
 			       />
 	}
 }

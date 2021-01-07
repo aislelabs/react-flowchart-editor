@@ -1032,7 +1032,9 @@ class AlWindowEditor extends React.Component {
                 />
             );
             let downArrowSvg = (
-                <svg
+                <svg style={{width: (this.props.inputNodeSizePx) + 'px',
+                    height: (this.props.inputNodeSizePx) + 'px',
+                    top: (this.props.inputNodeTopOffset) + 'px'}}
                     className={`alweInput ${activeStr}`}
                     key={'alweInput_' + i}
                     data-idx={'input_' + i}
@@ -1078,6 +1080,9 @@ class AlWindowEditor extends React.Component {
                 );
                 outputElements.push(
                     <svg
+                        style={{width: (this.props.outputNodeSizePx) + 'px',
+                            height: (this.props.outputNodeSizePx) + 'px',
+                            top: (this.props.outputNodeTopOffset) + 'px'}}
                         xmlns="http://www.w3.org/2000/svg"
                         className={`alweOutput ${activeStr} ${additionalClass}`}
                         key={'alweOutput_' + i}
@@ -1099,6 +1104,9 @@ class AlWindowEditor extends React.Component {
                 );
                 let downArrowSvg = (
                     <svg
+                        style={{width: (this.props.outputNodeSizePx) + 'px',
+                            height: (this.props.outputNodeSizePx) + 'px',
+                            top: (this.props.outputNodeTopOffset) + 'px'}}
                         className={`alweOutput ${activeStr}`}
                         key={'alweOutput_' + i}
                         data-idx={'output_' + i}
@@ -1147,9 +1155,9 @@ class AlWindowEditor extends React.Component {
             );
         }**/
 
-        ///////////////////////////////////
-        ///////////////////////////////////
-        // is this node 's output connections connected to other nodes?
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // is this node 's output connections connected to other nodes?
         let outConnectedMap = {};
         let outConnections = (this.state.nodeLinks || [])
             .filter(elm => {
@@ -1166,9 +1174,9 @@ class AlWindowEditor extends React.Component {
             let connected = j in outConnectedMap;
             if (!connected) {
                 let recommendTargetBoxJsx = this.getSuggestionTargetBoxJsx(
-                    200,
-                    20,
-                    40,
+                    this.props.targetBoxWidthPx || 200,
+                    this.props.targetBoxMarginPx || 20,
+                    this.props.targetBoxDistanceToParentWindowVertical || 40,
                     this.state.targetDropBoxId,
                     displayOffsetX,
                     displayOffsetY,
@@ -1285,8 +1293,10 @@ class AlWindowEditor extends React.Component {
             let isYesNoOutput =
                 nodeIdToDescriptor[outNodeId].yesNoOutput || false;
             ////////////////////////////////
-            let inputNodePixelSize = 14 + 4 * 2;
-            let outputNodePixelSize = 27 + 8 * 2;
+            let x = parseInt(this.props.inputNodeSizePx, 10) || 14;
+            let inputNodePixelSize = x + 4 * 2;
+            x = parseInt(this.props.outputNodeSizePx, 10) || 27;
+            let outputNodePixelSize = x + 8 * 2;
             let [x0, y0] = this.getXYCoordinatesForInputOutputNode(
                 false,
                 outNodeDisplay.width,
@@ -1465,12 +1475,7 @@ class AlWindowEditor extends React.Component {
                     {this.getMagnifyingGlassSvg(16, 16)}
                 </div>
             );
-            let topNotifierJsx = (
-                <div className={'topComponentInfoBox'}>
-                    Drag and drop to add node
-                </div>
-            );
-            let componentJsxList = [topNotifierJsx, componentFilterJsx];
+            let componentJsxList = [componentFilterJsx];
             let i = 0;
             let componentNameConsidered = {};
             let searchInputText = this.state.componentSearchText;
@@ -1579,34 +1584,43 @@ class AlWindowEditor extends React.Component {
                 {/************************************************************** */}
                 {/************************************************************** */}
                 {/************************************************************** */}
-
-                <div
-                    className={`componentArea ${componentAreaOpenCssClassname}`}
-                >
-                    {!this.props.viewOnly && (
+                {!this.props.viewOnly && (
+                    <React.Fragment>
                         <div
-                            className={'closeOpenButton'}
-                            onClick={e => {
-                                this.setState(s => {
-                                    s.componentAreaOpen = !s.componentAreaOpen;
-                                    return {...s};
-                                });
-                            }}
+                            className={`topInfoBoxArea`}
                         >
                             <div
-                                className={`indicator ${componentAreaOpenCssClassname}`}
+                                className={'closeOpenButton'}
+                                onClick={e => {
+                                    this.setState(s => {
+                                        s.componentAreaOpen = !s.componentAreaOpen;
+                                        return {...s};
+                                    });
+                                }}
                             >
-                                >>
+                                <div
+                                    className={`indicator ${componentAreaOpenCssClassname}`}
+                                >
+                                    {(componentAreaOpenCssClassname == 'open' ? (<p>&minus;</p>) :
+                                        (<p>+</p>))}
+                                </div>
+                            </div>
+                            <div className={'topComponentInfoBox'}>
+                                Drag and drop to add node
                             </div>
                         </div>
-                    )}
-                    <div
-                        className={`componentContent ${componentAreaOpenCssClassname}`}
-                    >
-                        {componentAreaJsx}
-                    </div>
-                </div>
 
+                        <div
+                            className={`componentArea ${this.props.componentAreaHideStyle} ${componentAreaOpenCssClassname}`}
+                        >
+                            <div
+                                className={`componentContent ${componentAreaOpenCssClassname}`}
+                            >
+                                {componentAreaJsx}
+                            </div>
+                        </div>
+                    </React.Fragment>
+                )}
                 {/************************************************************** */}
                 {/************************************************************** */}
                 {/************************************************************** */}
@@ -1689,6 +1703,19 @@ AlWindowEditor.propTypes = {
     initialNodeDescriptors: PropTypes.array,
     initialNodeLinks: PropTypes.array,
 
+
+
+    inputNodeSizePx: PropTypes.number,
+    outputNodeSizePx: PropTypes.number,
+    inputNodeTopOffset: PropTypes.number,
+    outputNodeTopOffset: PropTypes.number,
+
+    targetBoxWidthPx: PropTypes.number,
+    targetBoxMarginPx: PropTypes.number,
+    targetBoxDistanceToParentWindowVertical: PropTypes.number,
+
+    componentAreaHideStyle: PropTypes.string,
+
     /*
     componentRegistry : array of objects
     {
@@ -1753,6 +1780,17 @@ AlWindowEditor.propTypes = {
 
 AlWindowEditor.defaultProps = {
     dropNotificationElement: 'Drop something here',
+    inputNodeSizePx: 14,
+    outputNodeSizePx: 27,
+    inputNodeTopOffset: -16,
+    outputNodeTopOffset: -13,
+
+
+    targetBoxWidthPx: 200,
+    targetBoxMarginPx: 20,
+    targetBoxDistanceToParentWindowVertical: 40,
+    componentAreaHideStyle: 'horizontal vertical',
+
 };
 
 export default AlWindowEditor;

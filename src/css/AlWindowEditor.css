@@ -149,12 +149,12 @@ div.targetbox {
 
 
 .alweNodeWrapper .alweInputs .alweInput {
-  height: 14px;
-  width: 14px;
+  /*height: 14px;
+  width: 14px;*/
+    /*top: -16px;*/
   border : 1px solid var(--alWE-default-blue);
   background: var(--alWE-default-blue);
   position: relative;
-  top: -16px;
   padding: 2px 2px;
   margin: 0 3px;
 }
@@ -181,14 +181,14 @@ div.targetbox {
 .alweNodeWrapper .alweOutputs .alweOutput {
   background: #fff;
   position: relative;
-  height: 27px;
-  width: 27px;
+  /*height: 27px;
+  width: 27px;*/
+  /*   top: -13px; */
   border : 1px solid var(--alWE-default-blue);
   background: var(--alWE-default-blue);
   cursor: crosshair;
   margin: 0 6px;
   padding: 1px 1px;
-  top: -13px;
 }
 
 .alweNodeWrapper .alweOutputs .alweOutput:hover, .alweNodeWrapper .alweOutputs .alweOutput.active {
@@ -241,26 +241,60 @@ div.targetbox {
 /* ******************************************************************* */
 /* ******************************************************************* */
 /* ******************************************************************* */
-.componentArea {
+.topInfoBoxArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  height: calc(100% - 24px);
   z-index: 998;
   position: absolute;
   right: 0px;
   background: #fff;
-}
-.componentArea.open {
   width: 358px;
-  transition: var(--alWE-pane-transition-width);
 }
-.componentArea.closed {
-  width: 0px;
-  transition: var(--alWE-pane-transition-width);
+
+
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+/* ******************************************************************* */
+.componentArea {
+  box-shadow: var(--alWE-pane-boxshadow);
+  color: #626262;
+  z-index: 998;
+  position: absolute;
+  right: 0px;
+  background: #fff;
+  height: calc(100vh - 24px - 52px);
+  width: 358px;
+  top: 50px;
 }
+
+
+
+
+
 .componentArea .componentContent {
   overflow: auto;
   height: 100%;
+}
+
+.componentArea.horizontal.open {
+  width: 358px;
+  transition: var(--alWE-pane-transition-width);
+}
+.componentArea.horizontal.closed {
+  width: 0px;
+  transition: var(--alWE-pane-transition-width);
+}
+
+.componentArea.vertical.open {
+  height: calc(100vh - 24px - 52px);
+  transition: var(--alWE-pane-transition-all);
+}
+.componentArea.vertical.closed {
+  height: 0px;
+  transition: var(--alWE-pane-transition-all);
 }
 
 
@@ -276,7 +310,7 @@ div.targetbox {
   /* for the search magnifying glass */
 	fill: #c3c3c3;
 	position: absolute;
-	right: 8px;
+	right: 16px;
 	top: 19px;
 }
 
@@ -298,10 +332,8 @@ div.targetbox {
 	color: #d4d4d4;
 }
 
-.componentArea .componentContent.closed {
-  display: none;
-}
-.componentArea .componentContent .componentContentItem,     .componentArea .componentContent .topComponentInfoBox {
+
+.componentArea .componentContent .componentContentItem,     .topInfoBoxArea .topComponentInfoBox {
   width: 100%;
   min-height: 50px;
   padding: 0px 0px;
@@ -317,42 +349,40 @@ div.targetbox {
   
 }
 
-/* component open, close button ">>" */
-.componentArea .closeOpenButton {
-  box-shadow: -1px 1px 0px 0px rgba(0,0,0,0.12);
-  user-select: none;
-  cursor: pointer;
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  left: -48px;
-  font-weight: bold;
-  text-align: center;
-  background-color: #FFF;
-  border-radius: 5px 0 0 5px;
-  border-bottom: 1px solid #E8E8EF;
-  border-left: 1px solid #E8E8EF;
-  border-top: 1px solid #E8E8EF;
-  display: flex;
-	align-items: center;
-    text-align: center;
-}
 
 .componentArea .componentContent .componentContentItem:hover {
   background-color: #f9f9f9;
   /*box-shadow: 0 2px 4px 1px rgba(0,0,0,0.22);
   */
 }
-.componentArea .closeOpenButton .indicator, .componentArea .closeOpenButton .indicator.open {
-	width: 100%;
-  transform: rotate(0deg);
-  transition: var(--alWE-pane-transition-all);
+
+
+
+/* component open, close button ">>" */
+.closeOpenButton {
+  box-sizing: border-box;
+  user-select: none;
+  cursor: pointer;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  left: 0px;
+  font-weight: bold;
+  text-align: center;
+
+  display: flex;
+	align-items: center;
+    text-align: center;
 }
-.componentArea .closeOpenButton .indicator.closed {
-	width: 100%;
-  transform: rotate(180deg);
-  transition: var(--alWE-pane-transition-all);
+
+.closeOpenButton .indicator, .closeOpenButton .indicator.open {
+  width: 100%;
 }
+.closeOpenButton .indicator.closed {
+	width: 100%;
+}
+
+
 
 
 /* ******************************************************************* */
@@ -365,7 +395,7 @@ div.targetbox {
 .editorArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  overflow: scroll;
+  overflow: auto;
   height: calc(100% - 24px);
   z-index: 999;
   position: absolute;

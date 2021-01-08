@@ -395,7 +395,7 @@ div.targetbox {
 .editorArea {
   box-shadow: var(--alWE-pane-boxshadow);
   color: #626262;
-  overflow: auto;
+  /*overflow: auto;*/
   height: calc(100% - 24px);
   z-index: 999;
   position: absolute;
@@ -413,7 +413,7 @@ div.targetbox {
 
 .editorArea .editorContent {
   max-height: calc(100% - 132px);
-  overflow: auto;
+  /*overflow: auto;*/
 }
 
 .editorArea .editorContent.closed {

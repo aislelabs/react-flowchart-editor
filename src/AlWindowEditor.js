@@ -387,8 +387,8 @@ class AlWindowEditor extends React.Component {
             if (scaling >= 1.6) {
                 scaling = 1.6;
             }
-            if (scaling < 0.3) {
-                scaling = 0.3;
+            if (scaling < 0.7) {
+                scaling = 0.7;
             }
             if (oldScaling != scaling) {
                 let scalechange = scaling - oldScaling;
@@ -566,6 +566,10 @@ class AlWindowEditor extends React.Component {
             }
         }
 
+        this.resetSelectedMouseEventStates();
+    };
+
+    resetSelectedMouseEventStates = () => {
         this.setState({
             canvasMoveSelected: -1,
             resizeSelectedNodeId: -1,
@@ -577,7 +581,7 @@ class AlWindowEditor extends React.Component {
             mouseDownX: -1,
             mouseDownY: -1,
         });
-    };
+    }
 
     canvasClick = e => {
         let dom = e.target;
@@ -1035,11 +1039,11 @@ class AlWindowEditor extends React.Component {
                 <svg style={{width: (this.props.inputNodeSizePx) + 'px',
                     height: (this.props.inputNodeSizePx) + 'px',
                     top: (this.props.inputNodeTopOffset) + 'px'}}
-                    className={`alweInput ${activeStr}`}
-                    key={'alweInput_' + i}
-                    data-idx={'input_' + i}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
+                     className={`alweInput ${activeStr}`}
+                     key={'alweInput_' + i}
+                     data-idx={'input_' + i}
+                     viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg"
                 >
                     {downArrowSvgPath}
                 </svg>
@@ -1579,8 +1583,63 @@ class AlWindowEditor extends React.Component {
 
         let canvasTransform = `translate(${this.state.canvasOffsetX}px, ${this.state.canvasOffsetY}px) scale(${this.state.canvasScale})`;
 
+
+
+        {/************************************************************** */}
+        {/************************************************************** */}
+        {/*********calculate the min width, height for all components on the canvas right now */}
+
+        let minHeight = 0;
+        let minWidth = 0;
+        let curNodeDescriptors = this.state.nodeDescriptors;
+        for (let c = 0; curNodeDescriptors && c < curNodeDescriptors.length; ++c) {
+            let display = curNodeDescriptors[c].display;
+            let componentYCoord = display.offsetY + display.height;
+            minHeight = Math.max(minHeight, componentYCoord);
+            let componentXCoord = display.offsetX + display.width;
+            minWidth = Math.max(minWidth, componentXCoord);
+        }
+
         return (
-            <div className={'height100'}>
+            <div className={'height100'}
+                 onDragEnter={(e) => {
+                     e.preventDefault();
+                 }}
+                 onDragOver={(e) => {
+                     e.preventDefault();
+                 }}
+                 onDrop={(e) => {
+                     // component is dropped outside '.topCanvas' to the parent 'height100'
+                     // div.  Print an error if the error props is set
+                     let dom = e.target;
+                     let isDropOnCanvas = dom.classList.contains('topCanvas');
+                     let isTargetBoxDropped = dom.classList.contains('targetbox');
+                     if (!isDropOnCanvas && !isTargetBoxDropped) {
+                         //console.log('invalid drop');
+                         if (this.props.invalidNotificationFcn) {
+                             try {
+                                 this.props.invalidNotificationFcn();
+                             } catch (exception) {}
+                         }
+                     }
+               }}
+
+    onMouseUp={(e) => {
+        let dom = e.target;
+        let cvv = dom.closest('.topCanvas');
+        if (!cvv) {
+            this.resetSelectedMouseEventStates();
+        }
+    }}
+    onMouseMove={(e) => {
+        let dom = e.target;
+        let cvv = dom.closest('.topCanvas');
+        if (!cvv) {
+            this.resetSelectedMouseEventStates();
+        }
+    }}
+
+            >
                 {/************************************************************** */}
                 {/************************************************************** */}
                 {/************************************************************** */}
@@ -1658,13 +1717,16 @@ class AlWindowEditor extends React.Component {
                 {/************************************************************** */}
                 {/************************************************************** */}
 
+                {/************************************************************** */}
+                {/************************************************************** */}
+                {/************************************************************** */}
                 <div
                     ref={this.canvasRef}
                     className={'topCanvas'}
                     style={{
-                        width: '100%',
-                        height: '100%',
                         transform: canvasTransform,
+                        minHeight: (minHeight + 80) + 'px',
+                        minWidth: (minWidth + 80) + 'px',
                     }}
                     onMouseDown={this.canvasmousedown}
                     onMouseUp={this.canvasmouseup}
@@ -1703,6 +1765,9 @@ AlWindowEditor.propTypes = {
     initialNodeDescriptors: PropTypes.array,
     initialNodeLinks: PropTypes.array,
 
+    // a function with 0 parameters that gets called when the components
+    // are dropped outside a valid target.
+    invalidNotificationFcn: PropTypes.func,
 
 
     inputNodeSizePx: PropTypes.number,

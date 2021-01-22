@@ -218,7 +218,8 @@ class App extends Component{
 			       targetBoxMarginPx={5}
 			       targetBoxDistanceToParentWindowVertical={60}
 			       
-			       componentAreaHideStyle={'vertical'}
+			       componentAreaHideStyle={'vertical horizontal'}
+	                       invalidNotificationFcn={() => {alert('bad target');}}
 			       />
 	}
 }

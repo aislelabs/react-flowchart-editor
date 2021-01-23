@@ -1600,6 +1600,13 @@ class AlWindowEditor extends React.Component {
             minWidth = Math.max(minWidth, componentXCoord);
         }
 
+        let resetOnInvalidMouseMove = (e) => {
+            let dom = e.target;
+            let cvv = dom.closest('.topCanvas');
+            if (!cvv) {
+                this.resetSelectedMouseEventStates();
+            }
+        };
         return (
             <div className={'height100'}
                  onDragEnter={(e) => {
@@ -1622,23 +1629,10 @@ class AlWindowEditor extends React.Component {
                              } catch (exception) {}
                          }
                      }
-               }}
+                 }}
 
-    onMouseUp={(e) => {
-        let dom = e.target;
-        let cvv = dom.closest('.topCanvas');
-        if (!cvv) {
-            this.resetSelectedMouseEventStates();
-        }
-    }}
-    onMouseMove={(e) => {
-        let dom = e.target;
-        let cvv = dom.closest('.topCanvas');
-        if (!cvv) {
-            this.resetSelectedMouseEventStates();
-        }
-    }}
-
+                 onMouseUp={resetOnInvalidMouseMove}
+                 onMouseMove={resetOnInvalidMouseMove}
             >
                 {/************************************************************** */}
                 {/************************************************************** */}
@@ -1717,9 +1711,6 @@ class AlWindowEditor extends React.Component {
                 {/************************************************************** */}
                 {/************************************************************** */}
 
-                {/************************************************************** */}
-                {/************************************************************** */}
-                {/************************************************************** */}
                 <div
                     ref={this.canvasRef}
                     className={'topCanvas'}

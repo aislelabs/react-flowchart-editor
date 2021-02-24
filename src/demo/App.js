@@ -208,15 +208,15 @@ class App extends Component{
 		               nodeidBorderColorMap={nodeidBorderColor} 
 			       
 			        
-			       inputNodeSizePx={30}
-			       outputNodeSizePx={8}
+			       inputNodeSizePx={20}
+			       outputNodeSizePx={48}
 			       inputNodeTopOffset={-32}
 			       outputNodeTopOffset={-4} 
 			       
 			       
-			       targetBoxWidthPx={50}
+			       targetBoxWidthPx={120}
 			       targetBoxMarginPx={5}
-			       targetBoxDistanceToParentWindowVertical={60}
+			       targetBoxDistanceToParentWindowVertical={99}
 			       
 			       componentAreaHideStyle={'vertical horizontal'}
 	                       invalidNotificationFcn={() => {alert('bad target');}}

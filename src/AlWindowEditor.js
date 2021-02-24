@@ -952,6 +952,12 @@ class AlWindowEditor extends React.Component {
                     onDragEnd={dragEv => {
                         this.setState({targetDropBoxId: -1});
                     }}
+                    onMouseEnter={mouseEv => {
+                        this.setState({targetDropBoxId: myTargetBoxId});
+                    }}
+                    onMouseLeave={mouseEv => {
+                        this.setState({targetDropBoxId: -1});
+                    }}
                 >
                     {this.props.dropNotificationElement}
                 </div>

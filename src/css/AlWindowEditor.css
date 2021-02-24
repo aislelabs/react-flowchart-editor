@@ -79,6 +79,7 @@
   padding: 0px;
   border: 1px solid #cacaca;
   user-select: none;
+  -webkit-user-select: none;
   box-shadow: var(--alWE-pane-boxshadow);
 
 }
@@ -115,15 +116,17 @@
 /* ******************************************************************* */
 /* ******************************************************************* */
 div.targetbox {
+	display: flex;
 	border: 3px dashed silver;
 	padding: 12px;
 	border-radius: 2px;
 	position: absolute;
 	background: white;
 	overflow-wrap: break-word;
-        box-sizing: border-box; /* border box sizing is very important !! */
-	display: flex;
+    box-sizing: border-box; /* border box sizing is very important in this case !! */
 	justify-content: center;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
 .targetbox:hover,    .targetbox:active,      .targetbox.dragover {
@@ -341,6 +344,7 @@ div.targetbox {
   padding: 0px 0px;
   margin: 0px 0px;
   user-select: none;
+  -webkit-user-select: none;
   cursor: pointer;
   font-size: var(--alWE-font-size);
   box-sizing: border-box;
@@ -364,6 +368,7 @@ div.targetbox {
 .closeOpenButton {
   box-sizing: border-box;
   user-select: none;
+  -webkit-user-select: none;
   cursor: pointer;
   position: absolute;
   width: 50px;
@@ -442,6 +447,7 @@ div.targetbox {
   border-radius: 5px;
   padding: 12px;
   user-select: none;
+  -webkit-user-select: none;
   text-align: center;
   color: #253134;
   border: 1px solid #c0c0c0;

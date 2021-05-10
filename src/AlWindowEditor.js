@@ -1573,8 +1573,6 @@ class AlWindowEditor extends React.Component {
                     if (componentRegistry.showDeleteButtonInEditPane != null) {
                         editorSelectedComponentShouldShowDeleteButton =
                             componentRegistry.showDeleteButtonInEditPane;
-                    } else {
-                        editorSelectedComponentShouldShowDeleteButton = false;
                     }
                     editorComponentJsx = (
                         <EditorComponentReactClass
@@ -1804,6 +1802,8 @@ AlWindowEditor.propTypes = {
       initialWidthPx: integer, the default, initial width in pixels when the component is first added
                                to the main window area
       initialHeightPx: integer, same as initialWidthPx, for height
+      showDeleteButtonInEditPane: true | false, whether or not to show the delete button in the editor window
+                                  when the component is selected for edit
       componentSelect : React component that represents this component in the component selector
                           (optional, if not specified, will just be the "componentType" string)
       componentWindow : React component that represents this component in the main window area

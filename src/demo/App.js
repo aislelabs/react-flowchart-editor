@@ -158,6 +158,7 @@ class App extends Component{
                 "componentSelect": AgeSelect,
                 "componentWindow": AgeWindow,
                 "componentEdit": AgeEdit,
+		"showDeleteButtonInEditPane": true,
             },
             {
                 "componentTypeName": "pictureselector",
@@ -172,6 +173,7 @@ class App extends Component{
                 "componentSelect": PictureSelect,
                 "componentWindow": PictureWindow,
                 "componentEdit": PictureEdit,
+		"showDeleteButtonInEditPane": true,
             },
             {
                 "componentTypeName": "dummy",
@@ -185,6 +187,8 @@ class App extends Component{
                 "componentSelect": DummySelect,
                 "componentWindow": DummyWindow,
                 "componentEdit": DummyEdit,
+		"showDeleteButtonInEditPane": false,
+
             },
         ];
         let updateCbkFcn = (nodeDescriptors, nodeLinks) => {

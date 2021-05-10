@@ -1545,6 +1545,8 @@ class AlWindowEditor extends React.Component {
                 ? 'open'
                 : 'closed';
         let editorComponentJsx = null;
+        let editorSelectedComponentName = '';
+        let editorSelectedComponentShouldShowDeleteButton = true;
         if (
             this.state.editorAreaOpen === true &&
             this.state.editorSelectedNodeId > -1 &&
@@ -1559,12 +1561,21 @@ class AlWindowEditor extends React.Component {
                 editorNodeIdNodeDescriptor != null &&
                 editorNodeIdNodeDescriptor.length == 1
             ) {
+                editorSelectedComponentName = editorNodeIdNodeDescriptor[0].nodeType;
+                // if the CSS name contains ".", replace all with "_"
+                editorSelectedComponentName = editorSelectedComponentName.replaceAll(".", "_");
                 let componentRegistry = this.getComponentDescriptor(
                     editorNodeIdNodeDescriptor[0].nodeType
                 );
                 if (componentRegistry != null) {
                     let EditorComponentReactClass =
                         componentRegistry.componentEdit;
+                    if (componentRegistry.showDeleteButtonInEditPane != null) {
+                        editorSelectedComponentShouldShowDeleteButton =
+                            componentRegistry.showDeleteButtonInEditPane;
+                    } else {
+                        editorSelectedComponentShouldShowDeleteButton = false;
+                    }
                     editorComponentJsx = (
                         <EditorComponentReactClass
                             data={{...editorNodeIdNodeDescriptor[0].data}}
@@ -1705,12 +1716,12 @@ class AlWindowEditor extends React.Component {
                         >
                             Close Editor
                         </div>
-                        <div
-                            className={'editorDeleteButton'}
+                        {editorSelectedComponentShouldShowDeleteButton && (<div
+                            className={`editorDeleteButton ${editorSelectedComponentName}`}
                             onClick={this.deleteEditorSelectedNodeToState}
                         >
                             Delete
-                        </div>
+                        </div>)}
                     </div>
                 </div>
                 {/************************************************************** */}

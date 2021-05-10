@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
+
   entry: {"index": "./indexsrc.js"},
   //entry: {"./dist/demoindex": './src/demo/index.js'}, // build demo page index
   module: {
